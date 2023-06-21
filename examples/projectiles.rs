@@ -1,5 +1,5 @@
 use ray_tracer_challenge_2::Tuple;
-use std::{env, error::Error, f32::MIN_POSITIVE, os::unix::process};
+use std::error::Error;
 
 #[derive(Debug)]
 struct Env {
