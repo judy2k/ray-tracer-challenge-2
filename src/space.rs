@@ -1,6 +1,5 @@
+use crate::EPSILON;
 use std::ops::{Add, Div, Mul, Neg, Sub};
-
-pub const EPSILON: f64 = 0.00001;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Tuple {
@@ -149,54 +148,8 @@ fn approx_equal(a: f64, b: f64) -> bool {
 #[cfg(test)]
 mod test {
     use super::*;
-    use std::fmt;
-
-    macro_rules! assert_approx_eq {
-        ($left:expr, $right:expr $(,)?) => {
-            match (&$left, &$right) {
-                (left_val, right_val) => {
-                    if !((*left_val - *right_val).abs() < EPSILON) {
-                        approx_equals_fail(left_val, right_val, None);
-                    }
-                }
-            }
-        };
-        ($left:expr, $right:expr, $($arg:tt)+) => {
-            match (&$left, &$right) {
-                (left_val, right_val) => {
-                    if !(*left_val == *right_val) {
-                        // The reborrows below are intentional. Without them, the stack slot for the
-                        // borrow is initialized even before the values are compared, leading to a
-                        // noticeable slow down.
-                        approx_equals_fail(left_val, right_val, Option::Some(format_args!($($arg)+)));
-                    }
-                }
-            }
-        };
-    }
-
-    #[track_caller]
-    fn approx_equals_fail(
-        left: &dyn fmt::Debug,
-        right: &dyn fmt::Debug,
-        args: Option<fmt::Arguments<'_>>,
-    ) {
-        let op = "!=";
-        match args {
-            Some(args) => panic!(
-                r#"assertion failed: `(left {} right)`
-  left: `{:?}`,
- right: `{:?}`: {}"#,
-                op, left, right, args
-            ),
-            None => panic!(
-                r#"assertion failed: `(left {} right)`
-  left: `{:?}`,
- right: `{:?}`"#,
-                op, left, right,
-            ),
-        }
-    }
+    use crate::assert_approx_eq;
+    use crate::testlib::approx_equals_fail;
 
     #[test]
     fn test_tuple_is_point() {
@@ -216,6 +169,11 @@ mod test {
         assert_approx_eq!(t.z(), 3.1);
         assert_approx_eq!(t.w(), 0.0);
         assert!(t.is_vector())
+    }
+
+    #[test]
+    fn test_point_from_ints() {
+        assert_eq!(Tuple::point(1.0, 2.0, 3.0), Tuple::point(1.0, 2.0, 3.0));
     }
 
     #[test]

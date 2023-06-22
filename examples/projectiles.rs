@@ -1,4 +1,4 @@
-use ray_tracer_challenge_2::Tuple;
+use ray_tracer_challenge_2::space::Tuple;
 use std::error::Error;
 
 #[derive(Debug)]
