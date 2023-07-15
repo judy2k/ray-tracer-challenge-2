@@ -1,8 +1,8 @@
 use crate::color::Color;
 
 pub struct Canvas {
-    width: usize,
-    height: usize,
+    pub width: usize,
+    pub height: usize,
     pixels: Vec<Color>,
 }
 
@@ -40,5 +40,15 @@ mod test {
                 assert_eq!(c.pixel_at(col, row), Color::new(0.0, 0.0, 0.0));
             }
         }
+    }
+
+    #[test]
+    fn test_write_pixel() {
+        let mut c = Canvas::new(10, 20);
+
+        let red = Color::new(1.0, 0., 0.);
+
+        c.write_pixel(2, 3, red);
+        assert_eq!(c.pixel_at(2, 3), Color::new(1.0, 0.0, 0.0));
     }
 }
