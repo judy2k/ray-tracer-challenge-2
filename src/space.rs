@@ -1,4 +1,5 @@
-use crate::EPSILON;
+use crate::approx_equal;
+
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Copy, Clone, Debug)]
@@ -141,15 +142,10 @@ impl Div<f64> for Tuple {
     }
 }
 
-fn approx_equal(a: f64, b: f64) -> bool {
-    (a - b).abs() < EPSILON
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::assert_approx_eq;
-    use crate::testlib::approx_equals_fail;
+    use crate::{assert_approx_eq, testlib::approx_equals_fail, EPSILON};
 
     #[test]
     fn test_tuple_is_point() {
