@@ -5,6 +5,8 @@ use std::error::Error;
 use std::fs::OpenOptions;
 use std::io::BufWriter;
 
+const OUTPUT_PATH: &str = "output/projectile.ppm";
+
 #[derive(Debug)]
 struct Env {
     gravity: Tuple,
@@ -50,7 +52,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut file = BufWriter::new(OpenOptions::new()
         .write(true)
         .create(true)
-        .open("output/projectile.ppm")?);
+        .open(OUTPUT_PATH)?);
+    println!("Writing file... {}", OUTPUT_PATH);
     canvas.write_ppm(&mut file)?;
+    println!("Done.");
     Ok(())
 }
