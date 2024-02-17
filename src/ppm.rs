@@ -30,13 +30,13 @@ impl Canvas {
                     writeln!(sink, "{}", line)?;
                     line = String::new();
                 }
-                if line.len() > 0 {
-                    write!(line, " {}", token).unwrap();
-                } else {
+                if line.is_empty() {
                     write!(line, "{}", token).unwrap();
+                } else {
+                    write!(line, " {}", token).unwrap();
                 }
             }
-            if line.len() > 0 {
+            if !line.is_empty() {
                 writeln!(sink, "{}", line)?;
             }
         }
