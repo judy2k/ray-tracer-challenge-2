@@ -1,5 +1,6 @@
 use std::fmt::Debug;
 
+#[derive(PartialEq)]
 pub struct Matrix {
     rows: usize,
     cols: usize,
@@ -32,6 +33,7 @@ impl Matrix {
         if let Some(val) = self.values.get_mut(index) {
             *val = value;
         }
+        // TODO: Raise an error if out of bounds.
     }
 
     pub fn get(&self, row: usize, col: usize) -> Option<f64> {
@@ -83,5 +85,25 @@ mod test {
         assert_eq!(m.get(0, 1).unwrap(), 5.0);
         assert_eq!(m.get(1, 0).unwrap(), 1.0);
         assert_eq!(m.get(1, 1).unwrap(), -2.0);
+    }
+
+    #[test]
+    fn test_partial_eq() {
+        let m1 = Matrix::from_values(
+            4,
+            4,
+            vec![
+                1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0,
+            ],
+        );
+        let m2 = Matrix::from_values(
+            4,
+            4,
+            vec![
+                1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0,
+            ],
+        );
+
+        assert_eq!(m1, m2);
     }
 }
