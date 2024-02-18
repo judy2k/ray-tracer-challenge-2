@@ -48,7 +48,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn test_color_construction() {
+    fn test_color_construction_4x4() {
         let m = Matrix::from_values(
             4,
             4,
@@ -65,5 +65,23 @@ mod test {
         assert_eq!(m.get(2, 2).unwrap(), 11.);
         assert_eq!(m.get(3, 0).unwrap(), 13.5);
         assert_eq!(m.get(3, 2).unwrap(), 15.5);
+    }
+
+    #[test]
+    fn test_color_construction_3x3() {
+        let m = Matrix::from_values(3, 3, vec![-3.0, 5.0, 0.0, 1.0, -2.0, -7.0, 0.0, 1.0, 1.0]);
+
+        assert_eq!(m.get(0, 0).unwrap(), -3.0);
+        assert_eq!(m.get(1, 1).unwrap(), -2.0);
+        assert_eq!(m.get(2, 2).unwrap(), 1.0);
+    }
+
+    #[test]
+    fn test_color_construction_2x2() {
+        let m = Matrix::from_values(2, 2, vec![-3.0, 5.0, 1.0, -2.0]);
+        assert_eq!(m.get(0, 0).unwrap(), -3.0);
+        assert_eq!(m.get(0, 1).unwrap(), 5.0);
+        assert_eq!(m.get(1, 0).unwrap(), 1.0);
+        assert_eq!(m.get(1, 1).unwrap(), -2.0);
     }
 }
