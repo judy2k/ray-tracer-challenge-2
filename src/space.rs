@@ -35,6 +35,16 @@ impl Tuple {
         self.z
     }
 
+    pub fn get(&self, index: usize) -> f64 {
+        match index {
+            0 => self.x,
+            1 => self.y,
+            2 => self.z,
+            3 => self.w,
+            4_usize .. => todo!()
+        }
+    }
+
     #[allow(unused)]
     fn w(&self) -> f64 {
         self.w
