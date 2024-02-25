@@ -536,4 +536,12 @@ mod test {
         let inv = transform.inverse().unwrap();
         assert_eq!(inv * v, Tuple::vector(-2., 2., 2.));
     }
+
+    #[test]
+    fn test_reflection() {
+        let transform = Matrix::scaling(-1., 1., 1.);
+        let p = Tuple::point(2., 3., 4.);
+
+        assert_eq!(transform * p, Tuple::point(-2., 3., 4.));
+    }
 }
