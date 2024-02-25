@@ -63,7 +63,11 @@ impl Matrix {
     }
 
     pub fn determinant(&self) -> f64 {
-        self.get(0, 0) * self.get(1, 1) - self.get(0, 1) * self.get(1, 0)
+        if self.rows == 2 && self.cols == 2 {
+            self.get(0, 0) * self.get(1, 1) - self.get(0, 1) * self.get(1, 0)
+        } else {
+            (0..self.cols).map(|col| self.get(0, col) * self.cofactor(0, col)).sum()
+        }
     }
 
     pub fn submatrix(&self, row: usize, col: usize) -> Matrix {
@@ -74,6 +78,15 @@ impl Matrix {
             }
         }
         result
+    }
+
+    pub fn minor(&self, row: usize, col: usize) -> f64  {
+        self.submatrix(row, col).determinant()
+    }
+
+    pub fn cofactor(&self, row: usize, col: usize) -> f64 {
+        let modifier = if row + col % 2 == 1 { -1. } else { 1. };
+        return self.minor(row, col) * modifier;
     }
 }
 
@@ -298,10 +311,32 @@ mod test {
     }
 
     #[test]
-    fn test_determinant() {
+    fn test_determinant_2x2() {
         let m = Matrix::from_values(2, 2, vec![1., 5., -3., 2.]);
 
         assert_eq!(m.determinant(), 17.0);
+    }
+
+        #[test]
+    fn test_determinant_3x3() {
+        let m = Matrix::from_values(3, 3, vec![1.0, 2.0, 6.0, -5.0, 8.0, -4.0, 2.0, 6.0, 4.0]);
+
+        assert_eq!(m.cofactor(0,0), 56.0);
+        assert_eq!(m.cofactor(0,1), 12.0);
+        assert_eq!(m.cofactor(0,2), -46.0);
+        assert_eq!(m.determinant(), -196.0);
+
+    }
+
+        #[test]
+    fn test_determinant_4x4() {
+        let m = Matrix::from_values(4, 4, vec![-2.0, -8.0, 3.0, 5.0, -3.0, 1.0, 7.0, 3.0, 1.0, 2.0, -9.0, 6.0, -6.0, 7.0, 7.0, -9.0]);
+
+        assert_eq!(m.cofactor(0,0), 690.0);
+        assert_eq!(m.cofactor(0,1), 447.0);
+        assert_eq!(m.cofactor(0,2), 210.0);
+        assert_eq!(m.cofactor(0,3), 51.0);
+        assert_eq!(m.determinant(), -4071.0);
     }
 
     #[test]
@@ -321,5 +356,23 @@ mod test {
         let r2 = Matrix::from_values(3, 3, vec![-6.0, 1.0, 6.0, -8.0, 8.0, 6.0, -7.0, -1.0, 1.0]);
         assert_eq!(m2.submatrix(2, 1), r2);
 
+    }
+
+    #[test]
+    fn test_minor() {
+        let m  = Matrix::from_values(3, 3, vec![3.0, 5.0, 0.0, 2.0, -1.0, -7.0, 6.0, -1.0, 5.0]);
+
+        assert_eq!(m.minor(1, 0), 25.);
+
+    }
+
+    #[test]
+    fn test_cofactor() {
+        let m = Matrix::from_values(3, 3, vec![3.0, 5.0, 0.0, 2.0, -1.0, -7.0, 6.0, -1.0, 5.0]);
+
+        assert_eq!(m.minor(0, 0), -12.);
+        assert_eq!(m.cofactor(0, 0), -12.);
+        assert_eq!(m.minor(1, 0), 25.);
+        assert_eq!(m.cofactor(1, 0), -25.);
     }
 }
