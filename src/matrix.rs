@@ -1,3 +1,4 @@
+use crate::approx_equal;
 use crate::space::Tuple;
 use once_cell::sync::OnceCell;
 use std::{fmt::Debug, ops::Mul};
@@ -16,7 +17,7 @@ pub fn identity_matrix() -> &'static Matrix {
     })
 }
 
-#[derive(PartialEq, Clone)]
+#[derive(Clone)]
 pub struct Matrix {
     rows: usize,
     cols: usize,
@@ -66,7 +67,9 @@ impl Matrix {
         if self.rows == 2 && self.cols == 2 {
             self.get(0, 0) * self.get(1, 1) - self.get(0, 1) * self.get(1, 0)
         } else {
-            (0..self.cols).map(|col| self.get(0, col) * self.cofactor(0, col)).sum()
+            (0..self.cols)
+                .map(|col| self.get(0, col) * self.cofactor(0, col))
+                .sum()
         }
     }
 
@@ -74,19 +77,62 @@ impl Matrix {
         let mut result = Matrix::new(self.rows - 1, self.cols - 1);
         for or in 0..result.rows {
             for oc in 0..result.cols {
-                result.set(or, oc, self.get(if or < row {or } else {or + 1}, if oc < col {oc} else {oc + 1} ));
+                result.set(
+                    or,
+                    oc,
+                    self.get(
+                        if or < row { or } else { or + 1 },
+                        if oc < col { oc } else { oc + 1 },
+                    ),
+                );
             }
         }
         result
     }
 
-    pub fn minor(&self, row: usize, col: usize) -> f64  {
+    pub fn minor(&self, row: usize, col: usize) -> f64 {
         self.submatrix(row, col).determinant()
     }
 
     pub fn cofactor(&self, row: usize, col: usize) -> f64 {
-        let modifier = if row + col % 2 == 1 { -1. } else { 1. };
+        let modifier = if (row + col) % 2 == 1 { -1. } else { 1. };
         self.minor(row, col) * modifier
+    }
+
+    pub fn invertible(&self) -> bool {
+        self.determinant() != 0.0
+    }
+
+    pub fn inverse(&self) -> Option<Matrix> {
+        if self.invertible() {
+            let mut result = Matrix::new(self.cols, self.rows);
+            let determinant = self.determinant();
+            for row in 0..self.rows {
+                for col in 0..self.cols {
+                    let c = self.cofactor(row, col);
+                    result.set(col, row, c / determinant)
+                }
+            }
+            Some(result)
+        } else {
+            None
+        }
+    }
+}
+
+impl PartialEq for Matrix {
+    fn eq(&self, other: &Self) -> bool {
+        if self.rows == other.rows && self.cols == other.cols {
+            for row in 0..self.rows {
+                for col in 0..self.cols {
+                    if !approx_equal(self.get(row, col), other.get(row, col)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        false
     }
 }
 
@@ -94,7 +140,11 @@ impl Debug for Matrix {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(f, "Matrix<{}, {}> [", self.rows, self.cols)?;
         for row in 0..self.rows {
-            writeln!(f, "  {:?}", &self.values[self.index(row, 0)..self.index(row, 0) + self.cols])?;
+            writeln!(
+                f,
+                "  {:?}",
+                &self.values[self.index(row, 0)..self.index(row, 0) + self.cols]
+            )?;
         }
         writeln!(f, "]")?;
 
@@ -317,25 +367,31 @@ mod test {
         assert_eq!(m.determinant(), 17.0);
     }
 
-        #[test]
+    #[test]
     fn test_determinant_3x3() {
         let m = Matrix::from_values(3, 3, vec![1.0, 2.0, 6.0, -5.0, 8.0, -4.0, 2.0, 6.0, 4.0]);
 
-        assert_eq!(m.cofactor(0,0), 56.0);
-        assert_eq!(m.cofactor(0,1), 12.0);
-        assert_eq!(m.cofactor(0,2), -46.0);
+        assert_eq!(m.cofactor(0, 0), 56.0);
+        assert_eq!(m.cofactor(0, 1), 12.0);
+        assert_eq!(m.cofactor(0, 2), -46.0);
         assert_eq!(m.determinant(), -196.0);
-
     }
 
-        #[test]
+    #[test]
     fn test_determinant_4x4() {
-        let m = Matrix::from_values(4, 4, vec![-2.0, -8.0, 3.0, 5.0, -3.0, 1.0, 7.0, 3.0, 1.0, 2.0, -9.0, 6.0, -6.0, 7.0, 7.0, -9.0]);
+        let m = Matrix::from_values(
+            4,
+            4,
+            vec![
+                -2.0, -8.0, 3.0, 5.0, -3.0, 1.0, 7.0, 3.0, 1.0, 2.0, -9.0, 6.0, -6.0, 7.0, 7.0,
+                -9.0,
+            ],
+        );
 
-        assert_eq!(m.cofactor(0,0), 690.0);
-        assert_eq!(m.cofactor(0,1), 447.0);
-        assert_eq!(m.cofactor(0,2), 210.0);
-        assert_eq!(m.cofactor(0,3), 51.0);
+        assert_eq!(m.cofactor(0, 0), 690.0);
+        assert_eq!(m.cofactor(0, 1), 447.0);
+        assert_eq!(m.cofactor(0, 2), 210.0);
+        assert_eq!(m.cofactor(0, 3), 51.0);
         assert_eq!(m.determinant(), -4071.0);
     }
 
@@ -355,15 +411,13 @@ mod test {
         );
         let r2 = Matrix::from_values(3, 3, vec![-6.0, 1.0, 6.0, -8.0, 8.0, 6.0, -7.0, -1.0, 1.0]);
         assert_eq!(m2.submatrix(2, 1), r2);
-
     }
 
     #[test]
     fn test_minor() {
-        let m  = Matrix::from_values(3, 3, vec![3.0, 5.0, 0.0, 2.0, -1.0, -7.0, 6.0, -1.0, 5.0]);
+        let m = Matrix::from_values(3, 3, vec![3.0, 5.0, 0.0, 2.0, -1.0, -7.0, 6.0, -1.0, 5.0]);
 
         assert_eq!(m.minor(1, 0), 25.);
-
     }
 
     #[test]
@@ -374,5 +428,58 @@ mod test {
         assert_eq!(m.cofactor(0, 0), -12.);
         assert_eq!(m.minor(1, 0), 25.);
         assert_eq!(m.cofactor(1, 0), -25.);
+    }
+
+    #[test]
+    fn test_invertible() {
+        let invertible = Matrix::from_values(
+            4,
+            4,
+            vec![
+                6.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 6.0, 4.0, -9.0, 3.0, -7.0, 9.0, 1.0, 7.0, -6.0,
+            ],
+        );
+
+        let non_invertible = Matrix::from_values(
+            4,
+            4,
+            vec![
+                -4.0, 2.0, -2.0, -3.0, 9.0, 6.0, 2.0, 6.0, 0.0, -5.0, 1.0, -5.0, 0.0, 0.0, 0.0, 0.0,
+            ],
+        );
+
+        assert!(invertible.invertible());
+        assert!(!non_invertible.invertible());
+    }
+
+    #[test]
+    fn test_inversion() {
+        let a = Matrix::from_values(
+            4,
+            4,
+            vec![
+                -5.0, 2.0, 6.0, -8.0, 1.0, -5.0, 1.0, 8.0, 7.0, 7.0, -6.0, -7.0, 1.0, -3.0, 7.0,
+                4.0,
+            ],
+        );
+        let b = a.inverse().unwrap();
+
+        let result = Matrix::from_values(
+            4,
+            4,
+            vec![
+                0.21805, 0.45113, 0.2406, -0.04511, -0.80827, -1.45677, -0.44361, 0.52068,
+                -0.07895, -0.22368, -0.05263, 0.19737, -0.52256, -0.81391, -0.30075, 0.30639,
+            ],
+        );
+
+        assert_eq!(a.determinant(), 532.);
+        assert_eq!(a.cofactor(2, 3), -160.);
+
+        assert_eq!(b.get(3, 2), -160. / 532.);
+        assert_eq!(a.cofactor(3, 2), 105.);
+        assert_eq!(b.get(2, 3), 105. / 532.);
+
+        assert_eq!(b, result);
     }
 }
