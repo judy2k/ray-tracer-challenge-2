@@ -118,6 +118,16 @@ impl Matrix {
             None
         }
     }
+
+    pub fn translation(x: f64, y: f64, z: f64) -> Self {
+        let mut result = identity_matrix().clone();
+        result.set(0, 3, x);
+        result.set(1, 3, y);
+        result.set(2, 3, z);
+        result
+    }
+
+
 }
 
 impl PartialEq for Matrix {
@@ -481,5 +491,28 @@ mod test {
         assert_eq!(b.get(2, 3), 105. / 532.);
 
         assert_eq!(b, result);
+    }
+
+    #[test]
+    fn test_inverse_multiplication() {
+        let a = Matrix::from_values(4, 4, vec![3.0, -9.0, 7.0, 3.0, 3.0, -8.0, 2.0, -9.0, -4.0, 4.0, 4.0, 1.0, -6.0, 5.0, -1.0, 1.0]);
+        let b = Matrix::from_values(4, 4, vec![8.0, 2.0, 2.0, 2.0, 3.0, -1.0, 7.0, 0.0, 7.0, 0.0, 5.0, 4.0, 6.0, -2.0, 0.0, 5.0]);
+
+        let c = &a * &b;
+        assert_eq!(c * b.inverse().unwrap(), a);
+    }
+
+    #[test]
+    fn test_translation() {
+        let transform = Matrix::translation(5., -3., 2.);
+        let p = Tuple::point(-3., 4., 5.);
+
+        assert_eq!(&transform * p, Tuple::point(2., 1., 7.));
+
+        let inv = transform.inverse().unwrap();
+        assert_eq!(inv * p, Tuple::point(-8., 7., 3.));
+
+        let v = Tuple::vector(-3., 4., 5.);
+        assert_eq!(transform * v, v);
     }
 }
