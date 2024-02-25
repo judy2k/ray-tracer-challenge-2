@@ -1,18 +1,20 @@
 use crate::space::Tuple;
-use std::{fmt::Debug, ops::Mul};
 use once_cell::sync::OnceCell;
+use std::{fmt::Debug, ops::Mul};
 
 static IDENTITY_MATRIX: OnceCell<Matrix> = OnceCell::new();
 
 pub fn identity_matrix() -> &'static Matrix {
-    IDENTITY_MATRIX.get_or_init(||  Matrix::from_values(4,4, vec![
-        1.,0.,0.,0.,
-        0.,1.,0.,0.,
-        0.,0.,1.,0.,
-        0.,0.,0.,1.,
-    ]))
+    IDENTITY_MATRIX.get_or_init(|| {
+        Matrix::from_values(
+            4,
+            4,
+            vec![
+                1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1.,
+            ],
+        )
+    })
 }
-
 
 #[derive(PartialEq, Clone)]
 pub struct Matrix {
@@ -46,14 +48,42 @@ impl Matrix {
         self.values.get(self.index(row, col)).copied().unwrap()
     }
 
+    pub fn transpose(&self) -> Matrix {
+        let mut result = Matrix::new(self.cols, self.rows);
+        for row in 0..self.rows {
+            for col in 0..self.cols {
+                result.set(col, row, self.get(row, col));
+            }
+        }
+        result
+    }
+
     fn index(&self, row: usize, col: usize) -> usize {
         row * self.cols + col
+    }
+
+    pub fn determinant(&self) -> f64 {
+        self.get(0, 0) * self.get(1, 1) - self.get(0, 1) * self.get(1, 0)
+    }
+
+    pub fn submatrix(&self, row: usize, col: usize) -> Matrix {
+        let mut result = Matrix::new(self.rows - 1, self.cols - 1);
+        for or in 0..result.rows {
+            for oc in 0..result.cols {
+                result.set(or, oc, self.get(if or < row {or } else {or + 1}, if oc < col {oc} else {oc + 1} ));
+            }
+        }
+        result
     }
 }
 
 impl Debug for Matrix {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Matrix<{}, {}>", self.rows, self.cols)?;
+        writeln!(f, "Matrix<{}, {}> [", self.rows, self.cols)?;
+        for row in 0..self.rows {
+            writeln!(f, "  {:?}", &self.values[self.index(row, 0)..self.index(row, 0) + self.cols])?;
+        }
+        writeln!(f, "]")?;
 
         Ok(())
     }
@@ -94,19 +124,16 @@ impl Mul<&Self> for Matrix {
     }
 }
 
-
 impl Mul<Tuple> for &Matrix {
     type Output = Tuple;
     fn mul(self, rhs: Tuple) -> Self::Output {
-        let mut result_params = [0.0_f64; 4];
-
-        for row in 0..self.rows {
-            let mut tally: f64 = 0.0;
-            for col in 0..self.cols {
-                tally += self.get(row, col) * rhs.get(col)
-            }
-            result_params[row] = tally;
-        }
+        let result_params: Vec<f64> = (0..4)
+            .map(|row| {
+                (0..self.cols)
+                    .map(|col| self.get(row, col) * rhs.get(col))
+                    .sum()
+            })
+            .collect();
 
         Tuple::new(
             result_params[0],
@@ -123,7 +150,6 @@ impl Mul<Tuple> for Matrix {
         (&self).mul(rhs)
     }
 }
-
 
 #[cfg(test)]
 mod test {
@@ -246,5 +272,54 @@ mod test {
 
         assert_eq!(m.clone() * identity_matrix(), m);
         assert_eq!(&m * identity_matrix(), m);
+    }
+
+    #[test]
+    fn test_transpose() {
+        let m = Matrix::from_values(
+            4,
+            4,
+            vec![
+                0.0, 9.0, 3.0, 0.0, 9.0, 8.0, 0.0, 8.0, 1.0, 8.0, 5.0, 3.0, 0.0, 0.0, 5.0, 8.0,
+            ],
+        );
+
+        let result = Matrix::from_values(
+            4,
+            4,
+            vec![
+                0.0, 9.0, 1.0, 0.0, 9.0, 8.0, 8.0, 0.0, 3.0, 0.0, 5.0, 5.0, 0.0, 8.0, 3.0, 8.0,
+            ],
+        );
+
+        assert_eq!(m.transpose(), result);
+
+        assert_eq!(&identity_matrix().transpose(), identity_matrix());
+    }
+
+    #[test]
+    fn test_determinant() {
+        let m = Matrix::from_values(2, 2, vec![1., 5., -3., 2.]);
+
+        assert_eq!(m.determinant(), 17.0);
+    }
+
+    #[test]
+    fn test_submatrix() {
+        let m1 = Matrix::from_values(3, 3, vec![1.0, 5.0, 0.0, -3.0, 2.0, 7.0, 0.0, 6.0, -3.0]);
+        let r1 = Matrix::from_values(2, 2, vec![-3., 2., 0., 6.]);
+
+        assert_eq!(m1.submatrix(0, 2), r1);
+
+        let m2 = Matrix::from_values(
+            4,
+            4,
+            vec![
+                -6.0, 1.0, 1.0, 6.0, -8.0, 5.0, 8.0, 6.0, -1.0, 0.0, 8.0, 2.0, -7.0, 1.0, -1.0, 1.0,
+            ],
+        );
+        let r2 = Matrix::from_values(3, 3, vec![-6.0, 1.0, 6.0, -8.0, 8.0, 6.0, -7.0, -1.0, 1.0]);
+        assert_eq!(m2.submatrix(2, 1), r2);
+
     }
 }
