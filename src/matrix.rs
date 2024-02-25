@@ -127,6 +127,14 @@ impl Matrix {
         result
     }
 
+    pub fn scaling(x: f64, y: f64, z: f64) -> Self {
+        let mut result = identity_matrix().clone();
+        result.set(0, 0, x);
+        result.set(1, 1, y);
+        result.set(2, 2, z);
+        result
+    }
+
 
 }
 
@@ -514,5 +522,18 @@ mod test {
 
         let v = Tuple::vector(-3., 4., 5.);
         assert_eq!(transform * v, v);
+    }
+
+    #[test]
+    fn test_scaling() {
+        let transform = Matrix::scaling(2., 3., 4.);
+        let p = Tuple::point(-4., 6., 8.);
+        assert_eq!(&transform * p, Tuple::point(-8., 18., 32.));
+
+        let v = Tuple::vector(-4., 6., 8.);
+        assert_eq!(&transform * v, Tuple::vector(-8., 18., 32.));
+
+        let inv = transform.inverse().unwrap();
+        assert_eq!(inv * v, Tuple::vector(-2., 2., 2.));
     }
 }
