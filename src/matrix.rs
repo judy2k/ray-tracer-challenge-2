@@ -86,7 +86,7 @@ impl Matrix {
 
     pub fn cofactor(&self, row: usize, col: usize) -> f64 {
         let modifier = if row + col % 2 == 1 { -1. } else { 1. };
-        return self.minor(row, col) * modifier;
+        self.minor(row, col) * modifier
     }
 }
 
