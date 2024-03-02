@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+
+from math import sqrt
+import re
+import sys
+
+
+def main():
+    i = sys.stdin.read()
+
+    if matches := re.search("“(.*)”", i, re.S):
+        i = matches.group(1)
+    i = re.sub(r"[^\x00-\x7f]", r"", i)  # Strip non-ascii
+
+    numbers = [float(t.strip()) for t in re.split(r"\s*\|\s*", i) if t.strip()]
+    print(
+        f"Matrix::from_values({int(sqrt(len(numbers)))}, {int(sqrt(len(numbers)))}, vec!{numbers!r});"
+    )
+
+
+if __name__ == "__main__":
+    main()

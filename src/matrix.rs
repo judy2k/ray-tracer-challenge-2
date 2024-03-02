@@ -135,7 +135,89 @@ impl Matrix {
         result
     }
 
+    pub fn rotation_x(radians: f64) -> Self {
+        Matrix::from_values(
+            4,
+            4,
+            vec![
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                radians.cos(),
+                -radians.sin(),
+                0.0,
+                0.0,
+                radians.sin(),
+                radians.cos(),
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+            ],
+        )
+    }
 
+    pub fn rotation_y(radians: f64) -> Self {
+        Matrix::from_values(
+            4,
+            4,
+            vec![
+                radians.cos(),
+                0.0,
+                radians.sin(),
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                -(radians.sin()),
+                0.0,
+                radians.cos(),
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+            ],
+        )
+    }
+
+    pub fn rotation_z(radians: f64) -> Self {
+        Matrix::from_values(
+            4,
+            4,
+            vec![
+                radians.cos(),
+                -radians.sin(),
+                0.0,
+                0.0,
+                radians.sin(),
+                radians.cos(),
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+            ],
+        )
+    }
+
+    pub fn shearing(xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Self {
+        Self::from_values(4, 4, vec![
+            1.0, xy, xz, 0.0,
+            yx, 1.0, yz, 0.0,
+            zx, zy, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0,
+        ])
+    }
 }
 
 impl PartialEq for Matrix {
@@ -205,9 +287,9 @@ impl Mul<&Self> for Matrix {
     }
 }
 
-impl Mul<Tuple> for &Matrix {
+impl Mul<&Tuple> for &Matrix {
     type Output = Tuple;
-    fn mul(self, rhs: Tuple) -> Self::Output {
+    fn mul(self, rhs: &Tuple) -> Self::Output {
         let result_params: Vec<f64> = (0..4)
             .map(|row| {
                 (0..self.cols)
@@ -225,15 +307,31 @@ impl Mul<Tuple> for &Matrix {
     }
 }
 
+impl Mul<&Tuple> for Matrix {
+    type Output = Tuple;
+    fn mul(self, rhs: &Tuple) -> Self::Output {
+        (&self).mul(rhs)
+    }
+}
+
 impl Mul<Tuple> for Matrix {
     type Output = Tuple;
     fn mul(self, rhs: Tuple) -> Self::Output {
-        (&self).mul(rhs)
+        self.mul(&rhs)
+    }
+}
+
+impl Mul<Tuple> for &Matrix {
+    type Output = Tuple;
+    fn mul(self, rhs: Tuple) -> Self::Output {
+        self.mul(&rhs)
     }
 }
 
 #[cfg(test)]
 mod test {
+    use std::f64::consts::PI;
+
     use super::*;
     use crate::space::*;
 
@@ -503,8 +601,21 @@ mod test {
 
     #[test]
     fn test_inverse_multiplication() {
-        let a = Matrix::from_values(4, 4, vec![3.0, -9.0, 7.0, 3.0, 3.0, -8.0, 2.0, -9.0, -4.0, 4.0, 4.0, 1.0, -6.0, 5.0, -1.0, 1.0]);
-        let b = Matrix::from_values(4, 4, vec![8.0, 2.0, 2.0, 2.0, 3.0, -1.0, 7.0, 0.0, 7.0, 0.0, 5.0, 4.0, 6.0, -2.0, 0.0, 5.0]);
+        let a = Matrix::from_values(
+            4,
+            4,
+            vec![
+                3.0, -9.0, 7.0, 3.0, 3.0, -8.0, 2.0, -9.0, -4.0, 4.0, 4.0, 1.0, -6.0, 5.0, -1.0,
+                1.0,
+            ],
+        );
+        let b = Matrix::from_values(
+            4,
+            4,
+            vec![
+                8.0, 2.0, 2.0, 2.0, 3.0, -1.0, 7.0, 0.0, 7.0, 0.0, 5.0, 4.0, 6.0, -2.0, 0.0, 5.0,
+            ],
+        );
 
         let c = &a * &b;
         assert_eq!(c * b.inverse().unwrap(), a);
@@ -543,5 +654,109 @@ mod test {
         let p = Tuple::point(2., 3., 4.);
 
         assert_eq!(transform * p, Tuple::point(-2., 3., 4.));
+    }
+
+    #[test]
+    fn test_rotation_x() {
+        let p = Tuple::point(0., 1., 0.);
+        let half_quarter = Matrix::rotation_x(PI / 4.);
+        let full_quarter = Matrix::rotation_x(PI / 2.);
+        assert_eq!(
+            half_quarter * p,
+            Tuple::point(0.0, (2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0)
+        );
+        assert_eq!(full_quarter * p, Tuple::point(0.0, 0.0, 1.0));
+    }
+
+    #[test]
+    fn test_rotation_y() {
+        let p = Tuple::point(0., 0., 1.);
+        let half_quarter = Matrix::rotation_y(PI / 4.);
+        let full_quarter = Matrix::rotation_y(PI / 2.);
+        assert_eq!(
+            half_quarter * p,
+            Tuple::point((2.0_f64).sqrt() / 2.0, 0.0, (2.0_f64).sqrt() / 2.0)
+        );
+        assert_eq!(full_quarter * p, Tuple::point(1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn test_rotation_z() {
+        let p = Tuple::point(0., 1., 0.);
+        let half_quarter = Matrix::rotation_z(PI / 4.);
+        let full_quarter = Matrix::rotation_z(PI / 2.);
+        assert_eq!(
+            half_quarter * p,
+            Tuple::point(-(2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0, 0.0)
+        );
+        assert_eq!(full_quarter * p, Tuple::point(-1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn test_shearing_moves_x_to_y() {
+        let transform = Matrix::shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        let p = Tuple::point(2.0, 3.0, 4.0);
+
+        assert_eq!(transform * p, Tuple::point(5.0, 3.0, 4.0));
+    }
+
+    #[test]
+    fn test_shearing_moves_x_to_z() {
+        let transform = Matrix::shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
+        let p = Tuple::point(2.0, 3.0, 4.0);
+
+        assert_eq!(transform * p, Tuple::point(6.0, 3.0, 4.0));
+    }
+
+    #[test]
+    fn test_shearing_moves_y_to_x() {
+        let transform = Matrix::shearing(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
+        let p = Tuple::point(2.0, 3.0, 4.0);
+
+        assert_eq!(transform * p, Tuple::point(2.0, 5.0, 4.0));
+    }
+
+    #[test]
+    fn test_shearing_moves_y_to_z() {
+        let transform = Matrix::shearing(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+        let p = Tuple::point(2.0, 3.0, 4.0);
+
+        assert_eq!(transform * p, Tuple::point(2.0, 7.0, 4.0));
+    }
+
+    #[test]
+    fn test_shearing_moves_z_to_x() {
+        let transform = Matrix::shearing(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+        let p = Tuple::point(2.0, 3.0, 4.0);
+
+        assert_eq!(transform * p, Tuple::point(2.0, 3.0, 6.0));
+    }
+
+    #[test]
+    fn test_shearing_moves_z_to_y() {
+        let transform = Matrix::shearing(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+        let p = Tuple::point(2.0, 3.0, 4.0);
+
+        assert_eq!(transform * p, Tuple::point(2.0, 3.0, 7.0));
+    }
+
+    #[test]
+    fn test_transformations_applied_in_sequence() {
+        let p = Tuple::point(1.0, 0.0, 1.0);
+        let a = Matrix::rotation_x(PI / 2.0);
+        let b = Matrix::scaling(5.0, 5.0, 5.0);
+        let c = Matrix::translation(10.0, 5.0, 7.0);
+
+        let p2 = &a * p;
+        assert_eq!(p2, Tuple::point(1.0, -1.0, 0.0));
+
+        let p3 = &b * p2;
+        assert_eq!(p3, Tuple::point(5.0, -5.0, 0.0));
+
+        let p4 = &c * p3;
+        assert_eq!(p4, Tuple::point(15.0, 0.0, 7.0));
+
+        let p5 = c * b * a * p;
+        assert_eq!(p5, Tuple::point(15.0, 0.0, 7.0));
     }
 }

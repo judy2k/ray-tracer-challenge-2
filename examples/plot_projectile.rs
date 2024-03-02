@@ -44,15 +44,20 @@ fn main() -> Result<(), Box<dyn Error>> {
         let canvas_x = projectile.position.x().round() as usize;
         let canvas_y = canvas.height - projectile.position.y().round() as usize;
 
-        canvas.write_pixel(canvas_x, canvas_y, projectile_color);
+        canvas.plot_point(
+            &Tuple::point(canvas_x as f64, canvas_y as f64, 0.0),
+            &projectile_color,
+        );
 
         projectile = tick(&environment, projectile);
     }
 
-    let mut file = BufWriter::new(OpenOptions::new()
-        .write(true)
-        .create(true)
-        .open(OUTPUT_PATH)?);
+    let mut file = BufWriter::new(
+        OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open(OUTPUT_PATH)?,
+    );
     println!("Writing file... {}", OUTPUT_PATH);
     canvas.write_ppm(&mut file)?;
     println!("Done.");

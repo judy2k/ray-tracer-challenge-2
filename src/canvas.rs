@@ -1,4 +1,4 @@
-use crate::color::Color;
+use crate::{color::Color, space::Tuple};
 
 pub struct Canvas {
     pub width: usize,
@@ -21,6 +21,24 @@ impl Canvas {
 
     pub fn pixel_at(&self, x: usize, y: usize) -> Color {
         self.pixels[y * self.width + x]
+    }
+
+    pub fn plot_point(&mut self, point: &Tuple, color: &Color) {
+        // TODO: Write tests for this function.
+        let x = point.x().round() as usize;
+        let y = point.y().round() as usize;
+
+        let xmin = isize::max(0, x as isize - 1) as usize;
+        let ymin = isize::max(0, y as isize - 1) as usize;
+
+        let xmax = usize::min(x + 1, self.width - 1);
+        let ymax = usize::min(y + 1, self.height - 1);
+
+        for px in xmin..xmax + 1 {
+            for py in ymin..ymax + 1 {
+                self.write_pixel(px, py, color.clone());
+            }
+        }
     }
 }
 
