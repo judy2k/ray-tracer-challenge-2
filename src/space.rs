@@ -1,4 +1,4 @@
-use crate::approx_equal;
+use crate::{approx_equal, matrix::Matrix};
 
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
@@ -41,7 +41,7 @@ impl Tuple {
             1 => self.y,
             2 => self.z,
             3 => self.w,
-            4_usize .. => todo!()
+            4_usize.. => todo!(),
         }
     }
 
@@ -81,6 +81,30 @@ impl Tuple {
             self.z * other.x - self.x * other.z,
             self.x * other.y - self.y * other.x,
         )
+    }
+
+    pub fn translate(&self, x: f64, y: f64, z: f64) -> Tuple {
+        Matrix::translation(x, y, z) * self
+    }
+
+    pub fn scale(&self, x: f64, y: f64, z: f64) -> Tuple {
+        Matrix::scaling(x, y, z) * self
+    }
+
+    pub fn shear(&self, xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Tuple {
+        Matrix::shearing(xy, xz, yx, yz, zx, zy) * self
+    }
+
+    pub fn rotate_x(&self, radians: f64) -> Tuple {
+        Matrix::rotation_x(radians) * self
+    }
+
+    pub fn rotate_y(&self, radians: f64) -> Tuple {
+        Matrix::rotation_y(radians) * self
+    }
+
+    pub fn rotate_z(&self, radians: f64) -> Tuple {
+        Matrix::rotation_z(radians) * self
     }
 }
 

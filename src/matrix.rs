@@ -136,7 +136,7 @@ impl Matrix {
     }
 
     pub fn rotation_x(radians: f64) -> Self {
-        Matrix::from_values(
+        Self::from_values(
             4,
             4,
             vec![
@@ -161,7 +161,7 @@ impl Matrix {
     }
 
     pub fn rotation_y(radians: f64) -> Self {
-        Matrix::from_values(
+        Self::from_values(
             4,
             4,
             vec![
@@ -186,7 +186,7 @@ impl Matrix {
     }
 
     pub fn rotation_z(radians: f64) -> Self {
-        Matrix::from_values(
+        Self::from_values(
             4,
             4,
             vec![
@@ -211,12 +211,13 @@ impl Matrix {
     }
 
     pub fn shearing(xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Self {
-        Self::from_values(4, 4, vec![
-            1.0, xy, xz, 0.0,
-            yx, 1.0, yz, 0.0,
-            zx, zy, 1.0, 0.0,
-            0.0, 0.0, 0.0, 1.0,
-        ])
+        Self::from_values(
+            4,
+            4,
+            vec![
+                1.0, xy, xz, 0.0, yx, 1.0, yz, 0.0, zx, zy, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+            ],
+        )
     }
 }
 

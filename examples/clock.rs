@@ -24,11 +24,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             * Matrix::rotation_z(angle)
             * Matrix::translation(0.0, centre_y * 0.9, 0.0)
             * Tuple::point(0.0, 0.0, 0.0);
-        println!(
-            "{}, {}",
-            point.x().round() as usize,
-            point.y().round() as usize
-        );
         canvas.plot_point(&point, &point_color);
     }
 
