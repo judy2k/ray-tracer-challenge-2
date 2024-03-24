@@ -39,10 +39,10 @@ impl Matrix {
 
     pub fn set(&mut self, row: usize, col: usize, value: f64) {
         let index = self.index(row, col);
-        if let Some(val) = self.values.get_mut(index) {
-            *val = value;
+        match self.values.get_mut(index) {
+            Some(val) => *val = value,
+            None => panic!("{row}, {col} is out of bounds for {self:?}")
         }
-        // TODO: Raise an error if out of bounds.
     }
 
     pub fn get(&self, row: usize, col: usize) -> f64 {
