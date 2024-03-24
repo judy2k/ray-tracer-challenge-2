@@ -337,7 +337,7 @@ mod test {
     use crate::space::*;
 
     #[test]
-    fn test_color_construction_4x4() {
+    fn test_matrix_construction_4x4() {
         let m = Matrix::from_values(
             4,
             4,
@@ -357,7 +357,7 @@ mod test {
     }
 
     #[test]
-    fn test_color_construction_3x3() {
+    fn test_matrix_construction_3x3() {
         let m = Matrix::from_values(3, 3, vec![-3.0, 5.0, 0.0, 1.0, -2.0, -7.0, 0.0, 1.0, 1.0]);
 
         assert_eq!(m.get(0, 0), -3.0);
@@ -366,7 +366,7 @@ mod test {
     }
 
     #[test]
-    fn test_color_construction_2x2() {
+    fn test_matrix_construction_2x2() {
         let m = Matrix::from_values(2, 2, vec![-3.0, 5.0, 1.0, -2.0]);
         assert_eq!(m.get(0, 0), -3.0);
         assert_eq!(m.get(0, 1), 5.0);
@@ -433,9 +433,9 @@ mod test {
             ],
         );
 
-        let t = Tuple::new(1.0, 2.0, 3.0, 1.0);
+        let t = Tuple::point(1.0, 2.0, 3.0);
 
-        let result = Tuple::new(18., 24., 33., 1.);
+        let result = Tuple::point(18., 24., 33.);
 
         assert_eq!(m * t, result);
     }

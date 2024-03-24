@@ -10,16 +10,19 @@ pub struct Tuple {
     w: f64,
 }
 
+pub type Point = Tuple;
+pub type Vector = Tuple;
+
 impl Tuple {
     pub fn new(x: f64, y: f64, z: f64, w: f64) -> Self {
         Self { x, y, z, w }
     }
 
-    pub fn point(x: f64, y: f64, z: f64) -> Self {
+    pub fn point(x: f64, y: f64, z: f64) -> Point {
         Self::new(x, y, z, 1.0)
     }
 
-    pub fn vector(x: f64, y: f64, z: f64) -> Self {
+    pub fn vector(x: f64, y: f64, z: f64) -> Vector {
         Self::new(x, y, z, 0.0)
     }
 
@@ -64,9 +67,9 @@ impl Tuple {
     }
 
     // vector-only?
-    pub fn normalize(&self) -> Self {
+    pub fn normalize(&self) -> Vector {
         let m = self.magnitude();
-        Self::new(self.x / m, self.y / m, self.z / m, self.w / m)
+        Self::new(self.x / m, self.y / m, self.z / m, 0.0)
     }
 
     // Note for future refactoring: dot is vector-only.
