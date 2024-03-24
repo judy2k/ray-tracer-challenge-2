@@ -36,7 +36,7 @@ impl Canvas {
 
         for px in xmin..xmax + 1 {
             for py in ymin..ymax + 1 {
-                self.write_pixel(px, py, color.clone());
+                self.write_pixel(px, py, *color);
             }
         }
     }
