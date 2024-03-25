@@ -3,6 +3,7 @@ pub mod color;
 pub mod matrix;
 pub mod ppm;
 pub mod ray;
+pub mod shape;
 pub mod space;
 
 #[cfg(test)]
