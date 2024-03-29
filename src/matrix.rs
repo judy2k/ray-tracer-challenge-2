@@ -1,5 +1,5 @@
 use crate::approx_equal;
-use crate::space::Tuple;
+use crate::space::{Point, Tuple, Vector};
 use once_cell::sync::OnceCell;
 use std::{fmt::Debug, ops::Mul};
 
@@ -326,6 +326,38 @@ impl Mul<Tuple> for &Matrix {
     type Output = Tuple;
     fn mul(self, rhs: Tuple) -> Self::Output {
         self.mul(&rhs)
+    }
+}
+
+impl Mul<Point> for Matrix {
+    type Output = Point;
+    fn mul(self, rhs: Point) -> Self::Output {
+        let t = self.mul(*rhs);
+        Tuple::point(t.x(), t.y(), t.z())
+    }
+}
+
+impl Mul<Point> for &Matrix {
+    type Output = Point;
+    fn mul(self, rhs: Point) -> Self::Output {
+        let t = self.mul(*rhs);
+        Tuple::point(t.x(), t.y(), t.z())
+    }
+}
+
+impl Mul<Vector> for Matrix {
+    type Output = Vector;
+    fn mul(self, rhs: Vector) -> Self::Output {
+        let t = self.mul(*rhs);
+        Tuple::vector(t.x(), t.y(), t.z())
+    }
+}
+
+impl Mul<Vector> for &Matrix {
+    type Output = Vector;
+    fn mul(self, rhs: Vector) -> Self::Output {
+        let t = self.mul(*rhs);
+        Tuple::vector(t.x(), t.y(), t.z())
     }
 }
 

@@ -1,6 +1,6 @@
 use ray_tracer_challenge_2::canvas::Canvas;
 use ray_tracer_challenge_2::color::Color;
-use ray_tracer_challenge_2::space::Tuple;
+use ray_tracer_challenge_2::space::{Point, Tuple, Vector};
 use std::error::Error;
 use std::fs::OpenOptions;
 use std::io::BufWriter;
@@ -9,14 +9,14 @@ const OUTPUT_PATH: &str = "output/projectile.ppm";
 
 #[derive(Debug)]
 struct Env {
-    gravity: Tuple,
-    wind: Tuple,
+    gravity: Vector,
+    wind: Vector,
 }
 
 #[derive(Debug)]
 struct Projectile {
-    position: Tuple,
-    velocity: Tuple,
+    position: Point,
+    velocity: Vector,
 }
 
 fn tick(env: &Env, projectile: Projectile) -> Projectile {

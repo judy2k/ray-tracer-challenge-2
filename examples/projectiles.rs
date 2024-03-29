@@ -1,16 +1,16 @@
-use ray_tracer_challenge_2::space::Tuple;
+use ray_tracer_challenge_2::space::{Tuple, Vector, Point};
 use std::error::Error;
 
 #[derive(Debug)]
 struct Env {
-    gravity: Tuple,
-    wind: Tuple,
+    gravity: Vector,
+    wind: Vector,
 }
 
 #[derive(Debug)]
 struct Projectile {
-    position: Tuple,
-    velocity: Tuple,
+    position: Point,
+    velocity: Vector,
 }
 
 fn tick(env: &Env, projectile: Projectile) -> Projectile {

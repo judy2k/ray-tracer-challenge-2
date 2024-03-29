@@ -1,6 +1,191 @@
 use crate::{approx_equal, matrix::Matrix};
 
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::ops::{Add, Deref, DerefMut, Div, Mul, Neg, Sub};
+
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Point (Tuple);
+
+impl Point {
+    pub fn translate(&self, x: f64, y: f64, z: f64) -> Point {
+        Point((**self).translate(x, y, z))
+    }
+
+    pub fn scale(&self, x: f64, y: f64, z: f64) -> Point {
+        Point((**self).scale(x, y, z))
+    }
+
+    pub fn shear(&self, xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Point {
+        Point((**self).shear(xy, xz, yx, yz, zx, zy))
+    }
+
+    pub fn rotate_x(&self, x: f64) -> Point {
+        Point((**self).rotate_x(x))
+    }
+
+    pub fn rotate_y(&self, y: f64) -> Point {
+        Point((**self).rotate_y(y))
+    }
+
+    pub fn rotate_z(&self, z: f64) -> Point {
+        Point((**self).rotate_z(z))
+    }
+
+    
+}
+
+impl Add<Vector> for Point {
+    type Output = Point;
+    fn add(self, rhs: Vector) -> Self::Output {
+        Point(*self + *rhs)
+    }
+}
+
+impl Add<&Vector> for &Point {
+    type Output = Point;
+    fn add(self, rhs: &Vector) -> Self::Output {
+        Point(**self + **rhs)
+    }
+}
+
+impl Sub<Point> for Point {
+    type Output = Vector;
+    fn sub(self, rhs: Point) -> Self::Output {
+        Vector(*self - *rhs)
+    }
+}
+
+impl Sub<&Point> for &Point {
+    type Output = Vector;
+    fn sub(self, rhs: &Point) -> Self::Output {
+        Vector(**self - **rhs)
+    }
+}
+
+impl Sub<Vector> for Point {
+    type Output = Point;
+    fn sub(self, rhs: Vector) -> Self::Output {
+        Point(*self - *rhs)
+    }
+}
+
+impl Sub<&Vector> for &Point {
+    type Output = Point;
+    fn sub(self, rhs: &Vector) -> Self::Output {
+        Point(**self - **rhs)
+    }
+}
+
+
+impl Deref for Point {
+    type Target = Tuple;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Point {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+#[derive(Copy, Clone, Debug, PartialEq)]
+pub struct Vector (Tuple);
+
+impl Vector {
+    pub fn translate(&self, x: f64, y: f64, z: f64) -> Vector {
+        Vector((**self).translate(x, y, z))
+    }
+
+    pub fn scale(&self, x: f64, y: f64, z: f64) -> Vector {
+        Vector((**self).scale(x, y, z))
+    }
+
+    pub fn rotate_x(&self, x: f64) -> Vector {
+        Vector((**self).rotate_x(x))
+    }
+
+    pub fn shear(&self, xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Vector {
+        Vector((**self).shear(xy, xz, yx, yz, zx, zy))
+    }
+
+    pub fn magnitude(&self) -> f64 {
+        (self.x.powf(2.) + self.y.powf(2.) + self.z.powf(2.) + self.w.powf(2.)).sqrt()
+    }
+
+    pub fn normalize(&self) -> Vector {
+        let m = self.magnitude();
+        Tuple::vector(self.x / m, self.y / m, self.z / m)
+    }
+
+    pub fn dot(&self, other: Self) -> f64 {
+        self.x * other.x + self.y * other.y + self.z * other.z + self.w + other.w
+    }
+
+    pub fn cross(&self, other: Self) -> Vector {
+        Tuple::vector(
+            self.y * other.z - self.z * other.y,
+            self.z * other.x - self.x * other.z,
+            self.x * other.y - self.y * other.x,
+        )
+    }
+}
+
+impl Add<Vector> for Vector {
+    type Output = Vector;
+    fn add(self, rhs: Vector) -> Self::Output {
+        Vector(*self + *rhs)
+    }
+}
+
+impl Add<&Vector> for &Vector {
+    type Output = Vector;
+    fn add(self, rhs: &Vector) -> Self::Output {
+        Vector(**self + **rhs)
+    }
+}
+
+impl Sub<Vector> for Vector {
+    type Output = Vector;
+    fn sub(self, rhs: Vector) -> Self::Output {
+        Vector(*self - *rhs)
+    }
+}
+
+impl Sub<&Vector> for &Vector {
+    type Output = Vector;
+    fn sub(self, rhs: &Vector) -> Self::Output {
+        Vector(**self - **rhs)
+    }
+}
+
+impl Mul<f64> for Vector {
+    type Output = Vector;
+    fn mul(self, rhs: f64) -> Self::Output {
+        Vector(*self * rhs)
+    }
+}
+
+impl Mul<f64> for &Vector {
+    type Output = Vector;
+    fn mul(self, rhs: f64) -> Self::Output {
+        Vector(**self * rhs)
+    }
+}
+
+impl Deref for Vector {
+    type Target = Tuple;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Vector {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
 
 #[derive(Copy, Clone, Debug)]
 pub struct Tuple {
@@ -10,20 +195,17 @@ pub struct Tuple {
     w: f64,
 }
 
-pub type Point = Tuple;
-pub type Vector = Tuple;
-
 impl Tuple {
     pub fn new(x: f64, y: f64, z: f64, w: f64) -> Self {
         Self { x, y, z, w }
     }
 
     pub fn point(x: f64, y: f64, z: f64) -> Point {
-        Self::new(x, y, z, 1.0)
+        Point(Self::new(x, y, z, 1.0))
     }
 
     pub fn vector(x: f64, y: f64, z: f64) -> Vector {
-        Self::new(x, y, z, 0.0)
+        Vector(Self::new(x, y, z, 0.0))
     }
 
     pub fn x(&self) -> f64 {
@@ -59,31 +241,6 @@ impl Tuple {
 
     pub fn is_vector(&self) -> bool {
         approx_equal(self.w, 0.0)
-    }
-
-    // vector-only?
-    pub fn magnitude(&self) -> f64 {
-        (self.x.powf(2.) + self.y.powf(2.) + self.z.powf(2.) + self.w.powf(2.)).sqrt()
-    }
-
-    // vector-only?
-    pub fn normalize(&self) -> Vector {
-        let m = self.magnitude();
-        Self::new(self.x / m, self.y / m, self.z / m, 0.0)
-    }
-
-    // Note for future refactoring: dot is vector-only.
-    pub fn dot(&self, other: Self) -> f64 {
-        self.x * other.x + self.y * other.y + self.z * other.z + self.w + other.w
-    }
-
-    // Note for future refactoring: cross is vector-only (and returns a vector).
-    pub fn cross(&self, other: Self) -> Self {
-        Self::vector(
-            self.y * other.z - self.z * other.y,
-            self.z * other.x - self.x * other.z,
-            self.x * other.y - self.y * other.x,
-        )
     }
 
     pub fn translate(&self, x: f64, y: f64, z: f64) -> Tuple {
@@ -179,6 +336,18 @@ impl Div<f64> for Tuple {
     }
 }
 
+impl Into<Point> for Tuple {
+    fn into(self) -> Point {
+        Point(self)
+    }
+}
+
+impl Into<Vector> for Tuple {
+    fn into(self) -> Vector {
+        Vector(self)
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -222,8 +391,9 @@ mod test {
         b.x += EPSILON;
         assert_ne!(a, b);
 
-        let b = Tuple::point(4.3, -4.2, 3.1);
-        assert_ne!(a, b);
+        // Type system prevents comparing point with a vector.
+        // let b = Tuple::point(4.3, -4.2, 3.1);
+        // assert_ne!(a, b);
     }
 
     #[test]
@@ -232,12 +402,7 @@ mod test {
         let b = Tuple::vector(-2., 3., 1.);
         assert_eq!(
             a + b,
-            Tuple {
-                x: 1.,
-                y: 1.,
-                z: 6.,
-                w: 1.
-            }
+            Tuple::point(1.,1.,6.)
         );
     }
 
@@ -247,7 +412,7 @@ mod test {
         let b = Tuple::point(5., 6., 7.);
 
         assert_eq!(
-            a - b,
+            *(a - b),
             Tuple {
                 x: -2.,
                 y: -4.,
@@ -262,7 +427,7 @@ mod test {
         let a = Tuple::point(3., 2., 1.);
         let b = Tuple::vector(5., 6.0, 7.);
         assert_eq!(
-            a - b,
+            *(a - b),
             Tuple {
                 x: -2.,
                 y: -4.,
@@ -277,7 +442,7 @@ mod test {
         let a = Tuple::vector(3., 2., 1.);
         let b = Tuple::vector(5., 6.0, 7.);
         assert_eq!(
-            a - b,
+            *(a - b),
             Tuple {
                 x: -2.,
                 y: -4.,
