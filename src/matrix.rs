@@ -637,6 +637,15 @@ mod test {
     }
 
     #[test]
+    fn test_translation_chained() {
+        let p = Tuple::point(-3., 4., 5.);
+        assert_eq!(p.translate(5., -3., 2.), Tuple::point(2., 1., 7.));
+
+        let v = Tuple::vector(-3., 4., 5.);
+        assert_eq!(v.translate(5., -3., 2.), v);
+    }
+
+    #[test]
     fn test_scaling() {
         let transform = Matrix::scaling(2., 3., 4.);
         let p = Tuple::point(-4., 6., 8.);
@@ -647,6 +656,15 @@ mod test {
 
         let inv = transform.inverse().unwrap();
         assert_eq!(inv * v, Tuple::vector(-2., 2., 2.));
+    }
+
+    #[test]
+    fn test_scaling_chained() {
+        let p = Tuple::point(-4., 6., 8.);
+        assert_eq!(p.scale(2., 3., 4.), Tuple::point(-8., 18., 32.));
+
+        let v = Tuple::vector(-4., 6., 8.);
+        assert_eq!(v.scale(2., 3., 4.), Tuple::vector(-8., 18., 32.));
     }
 
     #[test]
@@ -667,6 +685,13 @@ mod test {
             Tuple::point(0.0, (2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0)
         );
         assert_eq!(full_quarter * p, Tuple::point(0.0, 0.0, 1.0));
+
+        assert_eq!(
+            p.rotate_x(PI / 4.),
+            Tuple::point(0.0, (2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0)
+        );
+        assert_eq!(p.rotate_x(PI / 2.), Tuple::point(0.0, 0.0, 1.0));
+
     }
 
     #[test]
@@ -679,6 +704,12 @@ mod test {
             Tuple::point((2.0_f64).sqrt() / 2.0, 0.0, (2.0_f64).sqrt() / 2.0)
         );
         assert_eq!(full_quarter * p, Tuple::point(1.0, 0.0, 0.0));
+
+        assert_eq!(
+            p.rotate_y(PI / 4.),
+            Tuple::point((2.0_f64).sqrt() / 2.0, 0.0, (2.0_f64).sqrt() / 2.0)
+        );
+        assert_eq!(p.rotate_y(PI / 2.), Tuple::point(1.0, 0.0, 0.0));
     }
 
     #[test]
@@ -691,6 +722,12 @@ mod test {
             Tuple::point(-(2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0, 0.0)
         );
         assert_eq!(full_quarter * p, Tuple::point(-1.0, 0.0, 0.0));
+
+        assert_eq!(
+            p.rotate_z(PI / 4.),
+            Tuple::point(-(2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0, 0.0)
+        );
+        assert_eq!(p.rotate_z(PI / 2.), Tuple::point(-1.0, 0.0, 0.0));
     }
 
     #[test]
@@ -699,6 +736,9 @@ mod test {
         let p = Tuple::point(2.0, 3.0, 4.0);
 
         assert_eq!(transform * p, Tuple::point(5.0, 3.0, 4.0));
+
+        assert_eq!(p.shear(1.0, 0.0, 0.0, 0.0, 0.0, 0.0), Tuple::point(5.0, 3.0, 4.0));
+
     }
 
     #[test]
@@ -715,6 +755,9 @@ mod test {
         let p = Tuple::point(2.0, 3.0, 4.0);
 
         assert_eq!(transform * p, Tuple::point(2.0, 5.0, 4.0));
+
+        assert_eq!(p.shear(0.0, 0.0, 1.0, 0.0, 0.0, 0.0), Tuple::point(2.0, 5.0, 4.0));
+
     }
 
     #[test]
@@ -723,6 +766,7 @@ mod test {
         let p = Tuple::point(2.0, 3.0, 4.0);
 
         assert_eq!(transform * p, Tuple::point(2.0, 7.0, 4.0));
+        assert_eq!(p.shear(0.0, 0.0, 0.0, 1.0, 0.0, 0.0), Tuple::point(2.0, 7.0, 4.0));
     }
 
     #[test]
@@ -731,6 +775,7 @@ mod test {
         let p = Tuple::point(2.0, 3.0, 4.0);
 
         assert_eq!(transform * p, Tuple::point(2.0, 3.0, 6.0));
+        assert_eq!(p.shear(0.0, 0.0, 0.0, 0.0, 1.0, 0.0), Tuple::point(2.0, 3.0, 6.0));
     }
 
     #[test]
@@ -739,6 +784,7 @@ mod test {
         let p = Tuple::point(2.0, 3.0, 4.0);
 
         assert_eq!(transform * p, Tuple::point(2.0, 3.0, 7.0));
+        assert_eq!(p.shear(0.0, 0.0, 0.0, 0.0, 0.0, 1.0), Tuple::point(2.0, 3.0, 7.0));
     }
 
     #[test]
@@ -759,5 +805,7 @@ mod test {
 
         let p5 = c * b * a * p;
         assert_eq!(p5, Tuple::point(15.0, 0.0, 7.0));
+
+        assert_eq!(p.rotate_x(PI / 2.0).scale(5.0, 5.0, 5.0).translate(10.0, 5.0, 7.0), Tuple::point(15.0, 0.0, 7.0))
     }
 }

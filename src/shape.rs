@@ -8,13 +8,6 @@ impl Sphere {
     }
 
     pub fn intersect(&self, ray: Ray) -> Vec<f64> {
-        /*
-        “​ sphere_to_ray ← ray.origin - point(0, 0, 0)​ 
-        ​ a ← dot(ray.direction, ray.direction)​ 
-        b ← 2 * dot(ray.direction, sphere_to_ray)​ 
-        c ← dot(sphere_to_ray, sphere_to_ray) - 1​ 
-        ​ discriminant ← b² - 4 * a * c”
- */
         let sphere_to_ray = ray.origin - Tuple::point(0.,0.,0.);
         let a = ray.direction.dot(ray.direction);
         let b = 2. * ray.direction.dot(sphere_to_ray);
