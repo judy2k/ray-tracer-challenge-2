@@ -106,6 +106,14 @@ impl Vector {
         Vector((**self).rotate_x(x))
     }
 
+    pub fn rotate_y(&self, y: f64) -> Vector {
+        Vector((**self).rotate_y(y))
+    }
+
+    pub fn rotate_z(&self, z: f64) -> Vector {
+        Vector((**self).rotate_z(z))
+    }
+
     pub fn shear(&self, xy: f64, xz: f64, yx: f64, yz: f64, zx: f64, zy: f64) -> Vector {
         Vector((**self).shear(xy, xz, yx, yz, zx, zy))
     }

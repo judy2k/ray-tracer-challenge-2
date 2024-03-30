@@ -332,32 +332,28 @@ impl Mul<Tuple> for &Matrix {
 impl Mul<Point> for Matrix {
     type Output = Point;
     fn mul(self, rhs: Point) -> Self::Output {
-        let t = self.mul(*rhs);
-        Tuple::point(t.x(), t.y(), t.z())
+        self.mul(*rhs).into()
     }
 }
 
 impl Mul<Point> for &Matrix {
     type Output = Point;
     fn mul(self, rhs: Point) -> Self::Output {
-        let t = self.mul(*rhs);
-        Tuple::point(t.x(), t.y(), t.z())
+        self.mul(*rhs).into()
     }
 }
 
 impl Mul<Vector> for Matrix {
     type Output = Vector;
     fn mul(self, rhs: Vector) -> Self::Output {
-        let t = self.mul(*rhs);
-        Tuple::vector(t.x(), t.y(), t.z())
+        self.mul(*rhs).into()
     }
 }
 
 impl Mul<Vector> for &Matrix {
     type Output = Vector;
     fn mul(self, rhs: Vector) -> Self::Output {
-        let t = self.mul(*rhs);
-        Tuple::vector(t.x(), t.y(), t.z())
+        self.mul(*rhs).into()
     }
 }
 
