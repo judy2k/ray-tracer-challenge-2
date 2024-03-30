@@ -1,4 +1,4 @@
-use ray_tracer_challenge_2::space::{Tuple, Vector, Point};
+use ray_tracer_challenge_2::space::{Point, Tuple, Vector};
 use std::error::Error;
 
 #[derive(Debug)]

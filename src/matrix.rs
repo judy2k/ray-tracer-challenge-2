@@ -41,7 +41,7 @@ impl Matrix {
         let index = self.index(row, col);
         match self.values.get_mut(index) {
             Some(val) => *val = value,
-            None => panic!("{row}, {col} is out of bounds for {self:?}")
+            None => panic!("{row}, {col} is out of bounds for {self:?}"),
         }
     }
 
@@ -719,7 +719,6 @@ mod test {
             Tuple::point(0.0, (2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0)
         );
         assert_eq!(p.rotate_x(PI / 2.), Tuple::point(0.0, 0.0, 1.0));
-
     }
 
     #[test]
@@ -765,8 +764,10 @@ mod test {
 
         assert_eq!(transform * p, Tuple::point(5.0, 3.0, 4.0));
 
-        assert_eq!(p.shear(1.0, 0.0, 0.0, 0.0, 0.0, 0.0), Tuple::point(5.0, 3.0, 4.0));
-
+        assert_eq!(
+            p.shear(1.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+            Tuple::point(5.0, 3.0, 4.0)
+        );
     }
 
     #[test]
@@ -784,8 +785,10 @@ mod test {
 
         assert_eq!(transform * p, Tuple::point(2.0, 5.0, 4.0));
 
-        assert_eq!(p.shear(0.0, 0.0, 1.0, 0.0, 0.0, 0.0), Tuple::point(2.0, 5.0, 4.0));
-
+        assert_eq!(
+            p.shear(0.0, 0.0, 1.0, 0.0, 0.0, 0.0),
+            Tuple::point(2.0, 5.0, 4.0)
+        );
     }
 
     #[test]
@@ -794,7 +797,10 @@ mod test {
         let p = Tuple::point(2.0, 3.0, 4.0);
 
         assert_eq!(transform * p, Tuple::point(2.0, 7.0, 4.0));
-        assert_eq!(p.shear(0.0, 0.0, 0.0, 1.0, 0.0, 0.0), Tuple::point(2.0, 7.0, 4.0));
+        assert_eq!(
+            p.shear(0.0, 0.0, 0.0, 1.0, 0.0, 0.0),
+            Tuple::point(2.0, 7.0, 4.0)
+        );
     }
 
     #[test]
@@ -803,7 +809,10 @@ mod test {
         let p = Tuple::point(2.0, 3.0, 4.0);
 
         assert_eq!(transform * p, Tuple::point(2.0, 3.0, 6.0));
-        assert_eq!(p.shear(0.0, 0.0, 0.0, 0.0, 1.0, 0.0), Tuple::point(2.0, 3.0, 6.0));
+        assert_eq!(
+            p.shear(0.0, 0.0, 0.0, 0.0, 1.0, 0.0),
+            Tuple::point(2.0, 3.0, 6.0)
+        );
     }
 
     #[test]
@@ -812,7 +821,10 @@ mod test {
         let p = Tuple::point(2.0, 3.0, 4.0);
 
         assert_eq!(transform * p, Tuple::point(2.0, 3.0, 7.0));
-        assert_eq!(p.shear(0.0, 0.0, 0.0, 0.0, 0.0, 1.0), Tuple::point(2.0, 3.0, 7.0));
+        assert_eq!(
+            p.shear(0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
+            Tuple::point(2.0, 3.0, 7.0)
+        );
     }
 
     #[test]
@@ -834,6 +846,11 @@ mod test {
         let p5 = c * b * a * p;
         assert_eq!(p5, Tuple::point(15.0, 0.0, 7.0));
 
-        assert_eq!(p.rotate_x(PI / 2.0).scale(5.0, 5.0, 5.0).translate(10.0, 5.0, 7.0), Tuple::point(15.0, 0.0, 7.0))
+        assert_eq!(
+            p.rotate_x(PI / 2.0)
+                .scale(5.0, 5.0, 5.0)
+                .translate(10.0, 5.0, 7.0),
+            Tuple::point(15.0, 0.0, 7.0)
+        )
     }
 }

@@ -8,7 +8,7 @@ impl Sphere {
     }
 
     pub fn intersect(&self, ray: Ray) -> Vec<f64> {
-        let sphere_to_ray = ray.origin - Tuple::point(0.,0.,0.);
+        let sphere_to_ray = ray.origin - Tuple::point(0., 0., 0.);
         let a = ray.direction.dot(ray.direction);
         let b = 2. * ray.direction.dot(sphere_to_ray);
         let c = sphere_to_ray.dot(sphere_to_ray) - 1.0;
@@ -20,7 +20,6 @@ impl Sphere {
             vec![
                 (-b - discriminant.sqrt()) / (2. * a),
                 (-b + discriminant.sqrt()) / (2. * a),
-
             ]
         }
     }
@@ -32,10 +31,9 @@ mod test {
 
     use super::*;
 
-    
     #[test]
     fn test_intersect_sphere() {
-        let r = Ray::new(Tuple::point(0.,0.,-5.), Tuple::vector(0.,0.,1.));
+        let r = Ray::new(Tuple::point(0., 0., -5.), Tuple::vector(0., 0., 1.));
         let s = Sphere::new();
 
         let is = s.intersect(r);
@@ -46,7 +44,7 @@ mod test {
 
     #[test]
     fn test_intersect_sphere_tangent() {
-        let r = Ray::new(Tuple::point(0.,1.,-5.), Tuple::vector(0.,0.,1.));
+        let r = Ray::new(Tuple::point(0., 1., -5.), Tuple::vector(0., 0., 1.));
         let s = Sphere::new();
 
         let is = s.intersect(r);
@@ -57,7 +55,7 @@ mod test {
 
     #[test]
     fn test_intersect_sphere_miss() {
-        let r = Ray::new(Tuple::point(0.,2.,-5.), Tuple::vector(0.,0.,1.));
+        let r = Ray::new(Tuple::point(0., 2., -5.), Tuple::vector(0., 0., 1.));
         let s = Sphere::new();
         let is = s.intersect(r);
         assert_eq!(is.len(), 0);
@@ -65,7 +63,7 @@ mod test {
 
     #[test]
     fn test_intersect_sphere_from_inside() {
-        let r = Ray::new(Tuple::point(0.,0.,0.), Tuple::vector(0.,0.,1.));
+        let r = Ray::new(Tuple::point(0., 0., 0.), Tuple::vector(0., 0., 1.));
         let s = Sphere::new();
         let is = s.intersect(r);
         assert_eq!(is.len(), 2);
@@ -73,9 +71,9 @@ mod test {
         assert_eq!(is[1], 1.0);
     }
 
-        #[test]
+    #[test]
     fn test_intersect_sphere_from_behind() {
-        let r = Ray::new(Tuple::point(0.,0.,5.), Tuple::vector(0.,0.,1.));
+        let r = Ray::new(Tuple::point(0., 0., 5.), Tuple::vector(0., 0., 1.));
         let s = Sphere::new();
         let is = s.intersect(r);
         assert_eq!(is.len(), 2);

@@ -2,9 +2,8 @@ use crate::{approx_equal, matrix::Matrix};
 
 use std::ops::{Add, Deref, DerefMut, Div, Mul, Neg, Sub};
 
-
 #[derive(Copy, Clone, Debug, PartialEq)]
-pub struct Point (Tuple);
+pub struct Point(Tuple);
 
 impl Point {
     pub fn translate(&self, x: f64, y: f64, z: f64) -> Point {
@@ -30,8 +29,6 @@ impl Point {
     pub fn rotate_z(&self, z: f64) -> Point {
         Point((**self).rotate_z(z))
     }
-
-    
 }
 
 impl Add<Vector> for Point {
@@ -76,7 +73,6 @@ impl Sub<&Vector> for &Point {
     }
 }
 
-
 impl Deref for Point {
     type Target = Tuple;
     fn deref(&self) -> &Self::Target {
@@ -91,7 +87,7 @@ impl DerefMut for Point {
 }
 
 #[derive(Copy, Clone, Debug, PartialEq)]
-pub struct Vector (Tuple);
+pub struct Vector(Tuple);
 
 impl Vector {
     pub fn translate(&self, x: f64, y: f64, z: f64) -> Vector {
@@ -408,10 +404,7 @@ mod test {
     fn test_tuple_add() {
         let a = Tuple::point(3., -2., 5.);
         let b = Tuple::vector(-2., 3., 1.);
-        assert_eq!(
-            a + b,
-            Tuple::point(1.,1.,6.)
-        );
+        assert_eq!(a + b, Tuple::point(1., 1., 6.));
     }
 
     #[test]

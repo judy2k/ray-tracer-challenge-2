@@ -7,7 +7,7 @@ pub struct Ray {
 
 impl Ray {
     pub fn new(origin: Point, direction: Vector) -> Self {
-        Self {origin, direction}
+        Self { origin, direction }
     }
 
     pub fn position(&self, d: f64) -> Point {
