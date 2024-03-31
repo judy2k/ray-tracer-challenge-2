@@ -1,5 +1,6 @@
 use crate::{ray::Ray, space::Tuple};
 
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Shape<'a> {
     Sphere(&'a Sphere),
 }
@@ -15,6 +16,13 @@ pub struct Intersection<'a> {
     shape: Shape<'a>,
 }
 
+impl<'a> Intersection<'a> {
+    pub fn new(t: f64, shape: Shape<'a>) -> Self {
+        Self { t, shape }
+    }
+}
+
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Sphere;
 
 impl Sphere {
@@ -33,8 +41,14 @@ impl Sphere {
             vec![]
         } else {
             vec![
-                Intersection{t: (-b - discriminant.sqrt()) / (2. * a), shape: self.into(),},
-                Intersection{t: (-b + discriminant.sqrt()) / (2. * a), shape: self.into(), },
+                Intersection {
+                    t: (-b - discriminant.sqrt()) / (2. * a),
+                    shape: self.into(),
+                },
+                Intersection {
+                    t: (-b + discriminant.sqrt()) / (2. * a),
+                    shape: self.into(),
+                },
             ]
         }
     }
@@ -54,7 +68,9 @@ mod test {
         let is = s.intersect(r);
         assert_eq!(is.len(), 2);
         assert_eq!(is[0].t, 4.0);
+        assert_eq!(is[0].shape, Shape::Sphere(&s));
         assert_eq!(is[1].t, 6.0);
+        assert_eq!(is[1].shape, Shape::Sphere(&s));
     }
 
     #[test]
@@ -65,7 +81,9 @@ mod test {
         let is = s.intersect(r);
         assert_eq!(is.len(), 2);
         assert_eq!(is[0].t, 5.0);
+        assert_eq!(is[0].shape, Shape::Sphere(&s));
         assert_eq!(is[1].t, 5.0);
+        assert_eq!(is[1].shape, Shape::Sphere(&s));
     }
 
     #[test]
@@ -83,7 +101,9 @@ mod test {
         let is = s.intersect(r);
         assert_eq!(is.len(), 2);
         assert_eq!(is[0].t, -1.0);
+        assert_eq!(is[0].shape, Shape::Sphere(&s));
         assert_eq!(is[1].t, 1.0);
+        assert_eq!(is[1].shape, Shape::Sphere(&s));
     }
 
     #[test]
@@ -93,6 +113,16 @@ mod test {
         let is = s.intersect(r);
         assert_eq!(is.len(), 2);
         assert_eq!(is[0].t, -6.0);
+        assert_eq!(is[0].shape, Shape::Sphere(&s));
         assert_eq!(is[1].t, -4.0);
+        assert_eq!(is[1].shape, Shape::Sphere(&s));
+    }
+
+    #[test]
+    fn test_intersection() {
+        let s = Sphere::new();
+        let i = Intersection::new(3.5, (&s).into());
+        assert_eq!(i.t, 3.5);
+        assert_eq!(i.shape, Shape::Sphere(&s));
     }
 }
