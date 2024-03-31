@@ -1,5 +1,20 @@
 use crate::{ray::Ray, space::Tuple};
 
+pub enum Shape<'a> {
+    Sphere(&'a Sphere),
+}
+
+impl<'a> From<&'a Sphere> for Shape<'a> {
+    fn from(value: &'a Sphere) -> Self {
+        Self::Sphere(value)
+    }
+}
+
+pub struct Intersection<'a> {
+    t: f64,
+    shape: Shape<'a>,
+}
+
 pub struct Sphere;
 
 impl Sphere {
@@ -7,7 +22,7 @@ impl Sphere {
         Self
     }
 
-    pub fn intersect(&self, ray: Ray) -> Vec<f64> {
+    pub fn intersect(&self, ray: Ray) -> Vec<Intersection> {
         let sphere_to_ray = ray.origin - Tuple::point(0., 0., 0.);
         let a = ray.direction.dot(ray.direction);
         let b = 2. * ray.direction.dot(sphere_to_ray);
@@ -18,8 +33,8 @@ impl Sphere {
             vec![]
         } else {
             vec![
-                (-b - discriminant.sqrt()) / (2. * a),
-                (-b + discriminant.sqrt()) / (2. * a),
+                Intersection{t: (-b - discriminant.sqrt()) / (2. * a), shape: self.into(),},
+                Intersection{t: (-b + discriminant.sqrt()) / (2. * a), shape: self.into(), },
             ]
         }
     }
@@ -38,8 +53,8 @@ mod test {
 
         let is = s.intersect(r);
         assert_eq!(is.len(), 2);
-        assert_eq!(is[0], 4.0);
-        assert_eq!(is[1], 6.0);
+        assert_eq!(is[0].t, 4.0);
+        assert_eq!(is[1].t, 6.0);
     }
 
     #[test]
@@ -49,8 +64,8 @@ mod test {
 
         let is = s.intersect(r);
         assert_eq!(is.len(), 2);
-        assert_eq!(is[0], 5.0);
-        assert_eq!(is[1], 5.0);
+        assert_eq!(is[0].t, 5.0);
+        assert_eq!(is[1].t, 5.0);
     }
 
     #[test]
@@ -67,8 +82,8 @@ mod test {
         let s = Sphere::new();
         let is = s.intersect(r);
         assert_eq!(is.len(), 2);
-        assert_eq!(is[0], -1.0);
-        assert_eq!(is[1], 1.0);
+        assert_eq!(is[0].t, -1.0);
+        assert_eq!(is[1].t, 1.0);
     }
 
     #[test]
@@ -77,7 +92,7 @@ mod test {
         let s = Sphere::new();
         let is = s.intersect(r);
         assert_eq!(is.len(), 2);
-        assert_eq!(is[0], -6.0);
-        assert_eq!(is[1], -4.0);
+        assert_eq!(is[0].t, -6.0);
+        assert_eq!(is[1].t, -4.0);
     }
 }
