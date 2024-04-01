@@ -7,3 +7,5 @@ run target="projectiles":
 examples:
     just run plot_projectile
     just run clock
+    just run projection
+    make -f output/Makefile
