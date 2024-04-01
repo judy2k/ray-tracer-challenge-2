@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use crate::shape::Shape;
 use crate::space::{Point, Vector};
 
@@ -16,6 +18,7 @@ impl Ray {
     }
 }
 
+#[derive(PartialEq, Debug, Clone)]
 pub struct Intersection<'a> {
     pub t: f64,
     pub shape: Shape<'a>,
@@ -27,12 +30,50 @@ impl<'a> Intersection<'a> {
     }
 }
 
+impl<'a> Eq for Intersection<'a> {}
+
+impl<'a> PartialOrd for Intersection<'a> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+         self.t.partial_cmp(&other.t)
+    }
+}
+
+impl<'a> Ord for Intersection<'a> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+       self.partial_cmp(other).unwrap()
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Intersections<'a> {
+    items: BTreeSet<&'a Intersection<'a>>,
+}
+
+impl<'a> Intersections<'a> {
+    pub fn new() -> Self {
+        Self { items: BTreeSet::new() }
+    }
+
+    pub fn add(&mut self, i: &'a Intersection<'a>) {
+        self.items.insert(i);
+    }
+
+    pub fn hit(&self) -> Option<&Intersection<'a>> {
+        for i in self.items.iter() {
+            if i.t.is_sign_positive() {
+                return Some(i)
+            }
+        }
+        None
+    }
+}
+
 #[cfg(test)]
 mod test {
     use crate::shape::{Shape, Sphere};
     use crate::space::Tuple;
 
-    use super::{Intersection, Ray};
+    use super::*;
 
     #[test]
     fn test_ray_construction() {
@@ -62,5 +103,57 @@ mod test {
         let i = Intersection::new(3.5, (&s).into());
         assert_eq!(i.t, 3.5);
         assert_eq!(i.shape, Shape::Sphere(&s));
+    }
+
+    #[test]
+    fn test_intersections_positive() {
+        let s = Sphere::new();
+        let i1 = Intersection::new(1.0, (&s).into());
+        let i2 = Intersection::new(2.0, (&s).into());
+
+        let mut xs = Intersections::new();
+        xs.add(&i2);
+        xs.add(&i1);
+        assert_eq!(xs.hit(), Some(&i1));
+    }
+
+    #[test]
+    fn test_intersections_some_negative() {
+        let s = Sphere::new();
+        let i1 = Intersection::new(-1.0, (&s).into());
+        let i2 = Intersection::new(1.0, (&s).into());
+
+        let mut xs = Intersections::new();
+        xs.add(&i2);
+        xs.add(&i1);
+        assert_eq!(xs.hit(), Some(&i2));
+    }
+
+    #[test]
+    fn test_intersections_all_negative() {
+        let s = Sphere::new();
+        let i1 = Intersection::new(-2.0, (&s).into());
+        let i2 = Intersection::new(-1.0, (&s).into());
+
+        let mut xs = Intersections::new();
+        xs.add(&i2);
+        xs.add(&i1);
+        assert_eq!(xs.hit(), None);
+    }
+
+    #[test]
+    fn test_intersections_more_values() {
+        let s = Sphere::new();
+        let i1 = Intersection::new(5.0, (&s).into());
+        let i2 = Intersection::new(7.0, (&s).into());
+        let i3 = Intersection::new(-3.0, (&s).into());
+        let i4 = Intersection::new(2.0, (&s).into());
+
+        let mut xs = Intersections::new();
+        xs.add(&i1);
+        xs.add(&i2);
+        xs.add(&i3);
+        xs.add(&i4);
+        assert_eq!(xs.hit(), Some(&i4));
     }
 }
