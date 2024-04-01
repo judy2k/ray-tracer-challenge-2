@@ -1,5 +1,6 @@
 use std::collections::BTreeSet;
 
+use crate::matrix::Matrix;
 use crate::shape::Shape;
 use crate::space::{Point, Vector};
 
@@ -15,6 +16,10 @@ impl Ray {
 
     pub fn position(&self, d: f64) -> Point {
         self.origin + self.direction * d
+    }
+
+    pub fn transform(&self, matrix: &Matrix) -> Ray {
+        Ray::new((matrix * (*self.origin) ).into(), matrix * self.direction)
     }
 }
 
@@ -155,5 +160,23 @@ mod test {
         xs.add(&i3);
         xs.add(&i4);
         assert_eq!(xs.hit(), Some(&i4));
+    }
+
+    #[test]
+    fn test_ray_translation() {
+        let r = Ray::new(Tuple::point(1.0, 2.0, 3.0), Tuple::vector(0.0, 1.0, 0.0));
+        let m = Matrix::translation(3.0, 4.0, 5.0);
+        let r2 = r.transform(&m);
+        assert_eq!(r2.origin, Tuple::point(4.0, 6.0, 8.0));
+        assert_eq!(r2.direction, Tuple::vector(0.0, 1.0, 0.0));
+    }
+
+    #[test]
+    fn test_ray_scaling() {
+        let r = Ray::new(Tuple::point(1.0, 2.0, 3.0), Tuple::vector(0.0, 1.0, 0.0));
+        let m = Matrix::scaling(2.0, 3.0, 4.0);
+        let r2 = r.transform(&m);
+        assert_eq!(r2.origin, Tuple::point(2.0, 6.0, 12.0));
+        assert_eq!(r2.direction, Tuple::vector(0.0, 3.0, 0.0));
     }
 }
