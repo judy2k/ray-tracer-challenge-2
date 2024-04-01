@@ -1,3 +1,4 @@
+use crate::shape::Shape;
 use crate::space::{Point, Vector};
 
 pub struct Ray {
@@ -15,11 +16,23 @@ impl Ray {
     }
 }
 
+pub struct Intersection<'a> {
+    pub t: f64,
+    pub shape: Shape<'a>,
+}
+
+impl<'a> Intersection<'a> {
+    pub fn new(t: f64, shape: Shape<'a>) -> Self {
+        Self { t, shape }
+    }
+}
+
 #[cfg(test)]
 mod test {
+    use crate::shape::{Shape, Sphere};
     use crate::space::Tuple;
 
-    use super::Ray;
+    use super::{Intersection, Ray};
 
     #[test]
     fn test_ray_construction() {
@@ -41,5 +54,13 @@ mod test {
         assert_eq!(r.position(1.), Tuple::point(3., 3., 4.));
         assert_eq!(r.position(-1.), Tuple::point(1., 3., 4.));
         assert_eq!(r.position(2.5), Tuple::point(4.5, 3., 4.));
+    }
+
+    #[test]
+    fn test_intersection() {
+        let s = Sphere::new();
+        let i = Intersection::new(3.5, (&s).into());
+        assert_eq!(i.t, 3.5);
+        assert_eq!(i.shape, Shape::Sphere(&s));
     }
 }
