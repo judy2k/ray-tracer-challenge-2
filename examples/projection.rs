@@ -1,12 +1,17 @@
 use std::{error::Error, fs::OpenOptions, io::BufWriter, time::Instant};
 
 use ray_tracer_challenge_2::{
-    canvas::Canvas, color::Color, matrix::Matrix, ray::{Intersections, Ray}, shape::Sphere, space::Tuple
+    canvas::Canvas,
+    color::Color,
+    matrix::Matrix,
+    ray::{Intersections, Ray},
+    shape::Sphere,
+    space::Tuple,
 };
 
 const OUTPUT_PATH: &str = "output/projection.ppm";
 
-fn main() -> Result<(), Box<dyn Error>>{
+fn main() -> Result<(), Box<dyn Error>> {
     let origin = Tuple::point(0.0, 0.0, -5.0);
     let wall_z = 10.0;
     let wall_size = 7.0;
@@ -32,11 +37,12 @@ fn main() -> Result<(), Box<dyn Error>>{
             let r = Ray::new(origin, (position - origin).normalize());
             // TODO: Optimize this - shouldn't transfer from vector to Intersections.
             // Pass in &mut Intersections?
-            let xs = shape.intersect(r);
             let mut is = Intersections::new();
-            for x in xs.iter() {
-                is.add(x);
-            }
+            shape.intersect(r, &mut is);
+            // let mut is = Intersections::new();
+            // for x in xs.iter() {
+            //     is.add(x);
+            // }
             if is.hit().is_some() {
                 canvas.write_pixel(x, y, color)
             }
