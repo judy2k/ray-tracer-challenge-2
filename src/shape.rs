@@ -1,4 +1,5 @@
 use crate::matrix::{identity_matrix, Matrix};
+use crate::space::{Point, Vector};
 use crate::{ray::Ray, space::Tuple};
 use crate::ray::Intersection;
 
@@ -25,6 +26,10 @@ impl Sphere {
         }
     }
 
+    pub fn transformation(&mut self) -> &mut Matrix {
+        &mut self.transformation
+    }
+
     pub fn intersect(&self, ray: Ray) -> Vec<Intersection> {
         let ray2 = ray.transform(&self.transformation.inverse().unwrap());
 
@@ -48,6 +53,10 @@ impl Sphere {
                 ),
             ]
         }
+    }
+
+    pub fn normal_at(&self, p: Point) -> Vector {
+        unimplemented!()
     }
 }
 
@@ -147,5 +156,43 @@ mod test {
         s.transformation = Matrix::translation(5.0, 0.0, 0.0);
         let xs = s.intersect(r);
         assert_eq!(xs.len(), 0);
+    }
+
+    #[test]
+    fn test_sphere_normal_x() {
+        let s = Sphere::new();
+        let n = s.normal_at(Tuple::point(1.0, 0.0, 0.0));
+        assert_eq!(n, Tuple::vector(1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn test_sphere_normal_y() {
+        let s = Sphere::new();
+        let n = s.normal_at(Tuple::point(0.0, 1.0, 0.0));
+        assert_eq!(n, Tuple::vector(0.0, 1.0, 0.0));
+    }
+
+    #[test]
+    fn test_sphere_normal_z() {
+        let s = Sphere::new();
+        let n = s.normal_at(Tuple::point(0.0, 0.0, 1.0));
+        assert_eq!(n, Tuple::vector(0.0, 0.0, 1.0));
+    }
+
+    #[test]
+    fn test_sphere_normal_nonaxial() {
+        // Third root three
+        let trt = (3.0_f64).sqrt() / 3.0;
+        let s = Sphere::new();
+        let n = s.normal_at(Tuple::point(trt, trt, trt));
+        assert_eq!(n, Tuple::vector(trt, trt, trt));
+    }
+
+    #[test]
+    fn test_sphere_normal_is_normalized() {
+        let trt = (3.0_f64).sqrt() / 3.0;
+        let s = Sphere::new();
+        let n = s.normal_at(Tuple::point(trt, trt, trt));
+        assert_eq!(n, n.normalize());
     }
 }
