@@ -1,4 +1,6 @@
-use std::collections::BTreeSet;
+use std::cmp::Ordering;
+use std::collections::{BTreeSet, BinaryHeap};
+use std::default;
 
 use crate::matrix::Matrix;
 use crate::shape::Shape;
@@ -23,15 +25,19 @@ impl Ray {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Intersection<'a> {
     pub t: f64,
     pub shape: Shape<'a>,
 }
 
-impl<'a> PartialEq for Intersection<'a> {
-    fn eq(&self, _other: &Self) -> bool {
-        false
+impl<'a> PartialOrd for Intersection<'a> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        match self.t.partial_cmp(&other.t) {
+            Some(Ordering::Greater) => Some(Ordering::Less),
+            Some(Ordering::Less) => Some(Ordering::Greater),
+            default=> default,
+        }
     }
 }
 
@@ -43,14 +49,7 @@ impl<'a> Intersection<'a> {
 
 impl<'a> Eq for Intersection<'a> {}
 
-impl<'a> PartialOrd for Intersection<'a> {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match self.t.partial_cmp(&other.t) {
-            Some(std::cmp::Ordering::Equal) => Some(std::cmp::Ordering::Less),
-            rest => rest,
-        }
-    }
-}
+
 
 impl<'a> Ord for Intersection<'a> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -60,13 +59,13 @@ impl<'a> Ord for Intersection<'a> {
 
 #[derive(Debug, Default, Clone)]
 pub struct Intersections<'a> {
-    items: BTreeSet<Intersection<'a>>,
+    items: BinaryHeap<Intersection<'a>>,
 }
 
 //impl<'a> IntoIterator for Intersections<'a> {
 impl<'a> IntoIterator for Intersections<'a> {
     type Item = Intersection<'a>;
-    type IntoIter = std::collections::btree_set::IntoIter<Self::Item>;
+    type IntoIter = std::collections::binary_heap::IntoIter<Self::Item>;
     fn into_iter(self) -> Self::IntoIter {
         self.items.into_iter()
     }
@@ -75,12 +74,12 @@ impl<'a> IntoIterator for Intersections<'a> {
 impl<'a> Intersections<'a> {
     pub fn new() -> Self {
         Self {
-            items: BTreeSet::new(),
+            items: BinaryHeap::new(),
         }
     }
 
     pub fn add(&mut self, i: Intersection<'a>) {
-        self.items.insert(i);
+        self.items.push(i);
     }
 
     pub fn hit(&self) -> Option<&Intersection<'a>> {
