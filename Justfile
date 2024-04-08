@@ -1,5 +1,5 @@
 test:
-    cargo nextest run
+    cargo nextest run --no-fail-fast
 
 run target="projectiles":
     cargo run --example {{target}}
