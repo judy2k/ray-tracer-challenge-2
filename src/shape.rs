@@ -58,9 +58,10 @@ impl Sphere {
     }
 
     pub fn normal_at(&self, p: Point) -> Vector {
-        let op = self.transformation.inverse().unwrap() * p;
-        let on = op - Tuple::point(0.0, 0.0, 0.0);
-        let wn = self.transformation.inverse().unwrap().transpose() * on;
+        let it = self.transformation.inverse().unwrap();
+        let op = &it * p;
+        let on = op.subtract_origin();
+        let wn = it.transpose() * on;
         wn.normalize()
     }
 }

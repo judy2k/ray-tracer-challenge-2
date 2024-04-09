@@ -6,6 +6,12 @@ use std::ops::{Add, Deref, DerefMut, Div, Mul, Neg, Sub};
 pub struct Point(Tuple);
 
 impl Point {
+    pub fn subtract_origin(&self) -> Vector {
+        let mut t = **self;
+        t.w = 0.0;
+        Vector(t)
+    }
+
     pub fn translate(&self, x: f64, y: f64, z: f64) -> Point {
         Point((**self).translate(x, y, z))
     }
