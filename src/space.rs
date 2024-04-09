@@ -6,6 +6,10 @@ use std::ops::{Add, Deref, DerefMut, Div, Mul, Neg, Sub};
 pub struct Point(Tuple);
 
 impl Point {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Self(Tuple::new(x, y, z, 1.0))
+    }
+
     pub fn subtract_origin(&self) -> Vector {
         let mut t = **self;
         t.w = 0.0;
@@ -102,6 +106,10 @@ impl DerefMut for Point {
 pub struct Vector(Tuple);
 
 impl Vector {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Self(Tuple::new(x, y, z, 0.0))
+    }
+
     pub fn translate(&self, x: f64, y: f64, z: f64) -> Vector {
         Vector((**self).translate(x, y, z))
     }
@@ -132,7 +140,7 @@ impl Vector {
 
     pub fn normalize(&self) -> Vector {
         let m = self.magnitude();
-        Tuple::vector(self.x / m, self.y / m, self.z / m)
+        Vector::new(self.x / m, self.y / m, self.z / m)
     }
 
     pub fn dot(&self, other: Self) -> f64 {
@@ -140,7 +148,7 @@ impl Vector {
     }
 
     pub fn cross(&self, other: Self) -> Vector {
-        Tuple::vector(
+        Vector::new(
             self.y * other.z - self.z * other.y,
             self.z * other.x - self.x * other.z,
             self.x * other.y - self.y * other.x,
@@ -225,11 +233,11 @@ impl Tuple {
     }
 
     pub fn point(x: f64, y: f64, z: f64) -> Point {
-        Point(Self::new(x, y, z, 1.0))
+        Point::new(x, y, z)
     }
 
     pub fn vector(x: f64, y: f64, z: f64) -> Vector {
-        Vector(Self::new(x, y, z, 0.0))
+        Vector::new(x, y, z)
     }
 
     pub fn x(&self) -> f64 {
@@ -367,7 +375,7 @@ mod test {
 
     #[test]
     fn test_tuple_is_point() {
-        let t = Tuple::point(4.3, -4.2, 3.1);
+        let t = Point::new(4.3, -4.2, 3.1);
         assert_approx_eq!(t.x(), 4.3);
         assert_approx_eq!(t.y(), -4.2);
         assert_approx_eq!(t.z(), 3.1);
@@ -377,7 +385,7 @@ mod test {
 
     #[test]
     fn test_tuple_is_vector() {
-        let t = Tuple::vector(4.3, -4.2, 3.1);
+        let t = Vector::new(4.3, -4.2, 3.1);
         assert_approx_eq!(t.x(), 4.3);
         assert_approx_eq!(t.y(), -4.2);
         assert_approx_eq!(t.z(), 3.1);
@@ -387,13 +395,13 @@ mod test {
 
     #[test]
     fn test_point_from_ints() {
-        assert_eq!(Tuple::point(1.0, 2.0, 3.0), Tuple::point(1.0, 2.0, 3.0));
+        assert_eq!(Point::new(1.0, 2.0, 3.0), Point::new(1.0, 2.0, 3.0));
     }
 
     #[test]
     fn test_tuple_eq() {
-        let a = Tuple::vector(4.3, -4.2, 3.1);
-        let mut b = Tuple::vector(4.3, -4.2, 3.1);
+        let a = Vector::new(4.3, -4.2, 3.1);
+        let mut b = Vector::new(4.3, -4.2, 3.1);
 
         assert_eq!(a, b);
 
@@ -404,21 +412,21 @@ mod test {
         assert_ne!(a, b);
 
         // Type system prevents comparing point with a vector.
-        // let b = Tuple::point(4.3, -4.2, 3.1);
+        // let b = Point::new(4.3, -4.2, 3.1);
         // assert_ne!(a, b);
     }
 
     #[test]
     fn test_tuple_add() {
-        let a = Tuple::point(3., -2., 5.);
-        let b = Tuple::vector(-2., 3., 1.);
-        assert_eq!(a + b, Tuple::point(1., 1., 6.));
+        let a = Point::new(3., -2., 5.);
+        let b = Vector::new(-2., 3., 1.);
+        assert_eq!(a + b, Point::new(1., 1., 6.));
     }
 
     #[test]
     fn test_tuple_subtract_two_points() {
-        let a = Tuple::point(3., 2., 1.);
-        let b = Tuple::point(5., 6., 7.);
+        let a = Point::new(3., 2., 1.);
+        let b = Point::new(5., 6., 7.);
 
         assert_eq!(
             *(a - b),
@@ -433,8 +441,8 @@ mod test {
 
     #[test]
     fn test_tuple_subtract_vector_from_point() {
-        let a = Tuple::point(3., 2., 1.);
-        let b = Tuple::vector(5., 6.0, 7.);
+        let a = Point::new(3., 2., 1.);
+        let b = Vector::new(5., 6.0, 7.);
         assert_eq!(
             *(a - b),
             Tuple {
@@ -448,8 +456,8 @@ mod test {
 
     #[test]
     fn test_tuple_subtract_two_vectors() {
-        let a = Tuple::vector(3., 2., 1.);
-        let b = Tuple::vector(5., 6.0, 7.);
+        let a = Vector::new(3., 2., 1.);
+        let b = Vector::new(5., 6.0, 7.);
         assert_eq!(
             *(a - b),
             Tuple {
@@ -463,10 +471,10 @@ mod test {
 
     #[test]
     fn test_tuple_subtract_vector_from_zero_vector() {
-        let zero = Tuple::vector(0.0, 0.0, 0.0);
-        let v = Tuple::vector(1.0, -2.0, 3.0);
+        let zero = Vector::new(0.0, 0.0, 0.0);
+        let v = Vector::new(1.0, -2.0, 3.0);
 
-        assert_eq!(zero - v, Tuple::vector(-1.0, 2.0, -3.0))
+        assert_eq!(zero - v, Vector::new(-1.0, 2.0, -3.0))
     }
 
     #[test]
@@ -501,41 +509,41 @@ mod test {
 
     #[test]
     fn test_tuple_magnitude() {
-        assert_approx_eq!(Tuple::vector(1.0, 0.0, 0.0).magnitude(), 1.0);
-        assert_approx_eq!(Tuple::vector(0.0, 1.0, 0.0).magnitude(), 1.0);
-        assert_approx_eq!(Tuple::vector(0.0, 0.0, 1.0).magnitude(), 1.0);
-        assert_approx_eq!(Tuple::vector(1.0, 2.0, 3.0).magnitude(), 14_f64.sqrt());
-        assert_approx_eq!(Tuple::vector(-1.0, -2.0, -3.0).magnitude(), 14_f64.sqrt());
+        assert_approx_eq!(Vector::new(1.0, 0.0, 0.0).magnitude(), 1.0);
+        assert_approx_eq!(Vector::new(0.0, 1.0, 0.0).magnitude(), 1.0);
+        assert_approx_eq!(Vector::new(0.0, 0.0, 1.0).magnitude(), 1.0);
+        assert_approx_eq!(Vector::new(1.0, 2.0, 3.0).magnitude(), 14_f64.sqrt());
+        assert_approx_eq!(Vector::new(-1.0, -2.0, -3.0).magnitude(), 14_f64.sqrt());
     }
 
     #[test]
     fn test_tuple_normalize() {
         assert_eq!(
-            Tuple::vector(4.0, 0.0, 0.0).normalize(),
-            Tuple::vector(1.0, 0.0, 0.0)
+            Vector::new(4.0, 0.0, 0.0).normalize(),
+            Vector::new(1.0, 0.0, 0.0)
         );
 
         assert_eq!(
-            Tuple::vector(1.0, 2.0, 3.0).normalize(),
-            Tuple::vector(0.26726, 0.53452, 0.80178)
+            Vector::new(1.0, 2.0, 3.0).normalize(),
+            Vector::new(0.26726, 0.53452, 0.80178)
         );
 
-        assert_approx_eq!(Tuple::vector(1.0, 2.0, 3.0).normalize().magnitude(), 1.0)
+        assert_approx_eq!(Vector::new(1.0, 2.0, 3.0).normalize().magnitude(), 1.0)
     }
 
     #[test]
     fn test_tuple_dot() {
-        let a = Tuple::vector(1.0, 2.0, 3.0);
-        let b = Tuple::vector(2.0, 3.0, 4.0);
+        let a = Vector::new(1.0, 2.0, 3.0);
+        let b = Vector::new(2.0, 3.0, 4.0);
         assert_approx_eq!(a.dot(b), 20.0);
     }
 
     #[test]
     fn test_tuple_cross() {
-        let a = Tuple::vector(1.0, 2.0, 3.0);
-        let b = Tuple::vector(2.0, 3.0, 4.0);
+        let a = Vector::new(1.0, 2.0, 3.0);
+        let b = Vector::new(2.0, 3.0, 4.0);
 
-        assert_eq!(a.cross(b), Tuple::vector(-1., 2., -1.));
-        assert_eq!(b.cross(a), Tuple::vector(1., -2., 1.));
+        assert_eq!(a.cross(b), Vector::new(-1., 2., -1.));
+        assert_eq!(b.cross(a), Vector::new(1., -2., 1.));
     }
 }

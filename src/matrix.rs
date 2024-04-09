@@ -461,9 +461,9 @@ mod test {
             ],
         );
 
-        let t = Tuple::point(1.0, 2.0, 3.0);
+        let t = Point::new(1.0, 2.0, 3.0);
 
-        let result = Tuple::point(18., 24., 33.);
+        let result = Point::new(18., 24., 33.);
 
         assert_eq!(m * t, result);
     }
@@ -653,204 +653,204 @@ mod test {
     #[test]
     fn test_translation() {
         let transform = Matrix::translation(5., -3., 2.);
-        let p = Tuple::point(-3., 4., 5.);
+        let p = Point::new(-3., 4., 5.);
 
-        assert_eq!(&transform * p, Tuple::point(2., 1., 7.));
+        assert_eq!(&transform * p, Point::new(2., 1., 7.));
 
         let inv = transform.inverse().unwrap();
-        assert_eq!(inv * p, Tuple::point(-8., 7., 3.));
+        assert_eq!(inv * p, Point::new(-8., 7., 3.));
 
-        let v = Tuple::vector(-3., 4., 5.);
+        let v = Vector::new(-3., 4., 5.);
         assert_eq!(transform * v, v);
     }
 
     #[test]
     fn test_translation_chained() {
-        let p = Tuple::point(-3., 4., 5.);
-        assert_eq!(p.translate(5., -3., 2.), Tuple::point(2., 1., 7.));
+        let p = Point::new(-3., 4., 5.);
+        assert_eq!(p.translate(5., -3., 2.), Point::new(2., 1., 7.));
 
-        let v = Tuple::vector(-3., 4., 5.);
+        let v = Vector::new(-3., 4., 5.);
         assert_eq!(v.translate(5., -3., 2.), v);
     }
 
     #[test]
     fn test_scaling() {
         let transform = Matrix::scaling(2., 3., 4.);
-        let p = Tuple::point(-4., 6., 8.);
-        assert_eq!(&transform * p, Tuple::point(-8., 18., 32.));
+        let p = Point::new(-4., 6., 8.);
+        assert_eq!(&transform * p, Point::new(-8., 18., 32.));
 
-        let v = Tuple::vector(-4., 6., 8.);
-        assert_eq!(&transform * v, Tuple::vector(-8., 18., 32.));
+        let v = Vector::new(-4., 6., 8.);
+        assert_eq!(&transform * v, Vector::new(-8., 18., 32.));
 
         let inv = transform.inverse().unwrap();
-        assert_eq!(inv * v, Tuple::vector(-2., 2., 2.));
+        assert_eq!(inv * v, Vector::new(-2., 2., 2.));
     }
 
     #[test]
     fn test_scaling_chained() {
-        let p = Tuple::point(-4., 6., 8.);
-        assert_eq!(p.scale(2., 3., 4.), Tuple::point(-8., 18., 32.));
+        let p = Point::new(-4., 6., 8.);
+        assert_eq!(p.scale(2., 3., 4.), Point::new(-8., 18., 32.));
 
-        let v = Tuple::vector(-4., 6., 8.);
-        assert_eq!(v.scale(2., 3., 4.), Tuple::vector(-8., 18., 32.));
+        let v = Vector::new(-4., 6., 8.);
+        assert_eq!(v.scale(2., 3., 4.), Vector::new(-8., 18., 32.));
     }
 
     #[test]
     fn test_reflection() {
         let transform = Matrix::scaling(-1., 1., 1.);
-        let p = Tuple::point(2., 3., 4.);
+        let p = Point::new(2., 3., 4.);
 
-        assert_eq!(transform * p, Tuple::point(-2., 3., 4.));
+        assert_eq!(transform * p, Point::new(-2., 3., 4.));
     }
 
     #[test]
     fn test_rotation_x() {
-        let p = Tuple::point(0., 1., 0.);
+        let p = Point::new(0., 1., 0.);
         let half_quarter = Matrix::rotation_x(PI / 4.);
         let full_quarter = Matrix::rotation_x(PI / 2.);
         assert_eq!(
             half_quarter * p,
-            Tuple::point(0.0, (2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0)
+            Point::new(0.0, (2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0)
         );
-        assert_eq!(full_quarter * p, Tuple::point(0.0, 0.0, 1.0));
+        assert_eq!(full_quarter * p, Point::new(0.0, 0.0, 1.0));
 
         assert_eq!(
             p.rotate_x(PI / 4.),
-            Tuple::point(0.0, (2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0)
+            Point::new(0.0, (2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0)
         );
-        assert_eq!(p.rotate_x(PI / 2.), Tuple::point(0.0, 0.0, 1.0));
+        assert_eq!(p.rotate_x(PI / 2.), Point::new(0.0, 0.0, 1.0));
     }
 
     #[test]
     fn test_rotation_y() {
-        let p = Tuple::point(0., 0., 1.);
+        let p = Point::new(0., 0., 1.);
         let half_quarter = Matrix::rotation_y(PI / 4.);
         let full_quarter = Matrix::rotation_y(PI / 2.);
         assert_eq!(
             half_quarter * p,
-            Tuple::point((2.0_f64).sqrt() / 2.0, 0.0, (2.0_f64).sqrt() / 2.0)
+            Point::new((2.0_f64).sqrt() / 2.0, 0.0, (2.0_f64).sqrt() / 2.0)
         );
-        assert_eq!(full_quarter * p, Tuple::point(1.0, 0.0, 0.0));
+        assert_eq!(full_quarter * p, Point::new(1.0, 0.0, 0.0));
 
         assert_eq!(
             p.rotate_y(PI / 4.),
-            Tuple::point((2.0_f64).sqrt() / 2.0, 0.0, (2.0_f64).sqrt() / 2.0)
+            Point::new((2.0_f64).sqrt() / 2.0, 0.0, (2.0_f64).sqrt() / 2.0)
         );
-        assert_eq!(p.rotate_y(PI / 2.), Tuple::point(1.0, 0.0, 0.0));
+        assert_eq!(p.rotate_y(PI / 2.), Point::new(1.0, 0.0, 0.0));
     }
 
     #[test]
     fn test_rotation_z() {
-        let p = Tuple::point(0., 1., 0.);
+        let p = Point::new(0., 1., 0.);
         let half_quarter = Matrix::rotation_z(PI / 4.);
         let full_quarter = Matrix::rotation_z(PI / 2.);
         assert_eq!(
             half_quarter * p,
-            Tuple::point(-(2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0, 0.0)
+            Point::new(-(2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0, 0.0)
         );
-        assert_eq!(full_quarter * p, Tuple::point(-1.0, 0.0, 0.0));
+        assert_eq!(full_quarter * p, Point::new(-1.0, 0.0, 0.0));
 
         assert_eq!(
             p.rotate_z(PI / 4.),
-            Tuple::point(-(2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0, 0.0)
+            Point::new(-(2.0_f64).sqrt() / 2.0, (2.0_f64).sqrt() / 2.0, 0.0)
         );
-        assert_eq!(p.rotate_z(PI / 2.), Tuple::point(-1.0, 0.0, 0.0));
+        assert_eq!(p.rotate_z(PI / 2.), Point::new(-1.0, 0.0, 0.0));
     }
 
     #[test]
     fn test_shearing_moves_x_to_y() {
         let transform = Matrix::shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-        let p = Tuple::point(2.0, 3.0, 4.0);
+        let p = Point::new(2.0, 3.0, 4.0);
 
-        assert_eq!(transform * p, Tuple::point(5.0, 3.0, 4.0));
+        assert_eq!(transform * p, Point::new(5.0, 3.0, 4.0));
 
         assert_eq!(
             p.shear(1.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-            Tuple::point(5.0, 3.0, 4.0)
+            Point::new(5.0, 3.0, 4.0)
         );
     }
 
     #[test]
     fn test_shearing_moves_x_to_z() {
         let transform = Matrix::shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
-        let p = Tuple::point(2.0, 3.0, 4.0);
+        let p = Point::new(2.0, 3.0, 4.0);
 
-        assert_eq!(transform * p, Tuple::point(6.0, 3.0, 4.0));
+        assert_eq!(transform * p, Point::new(6.0, 3.0, 4.0));
     }
 
     #[test]
     fn test_shearing_moves_y_to_x() {
         let transform = Matrix::shearing(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
-        let p = Tuple::point(2.0, 3.0, 4.0);
+        let p = Point::new(2.0, 3.0, 4.0);
 
-        assert_eq!(transform * p, Tuple::point(2.0, 5.0, 4.0));
+        assert_eq!(transform * p, Point::new(2.0, 5.0, 4.0));
 
         assert_eq!(
             p.shear(0.0, 0.0, 1.0, 0.0, 0.0, 0.0),
-            Tuple::point(2.0, 5.0, 4.0)
+            Point::new(2.0, 5.0, 4.0)
         );
     }
 
     #[test]
     fn test_shearing_moves_y_to_z() {
         let transform = Matrix::shearing(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-        let p = Tuple::point(2.0, 3.0, 4.0);
+        let p = Point::new(2.0, 3.0, 4.0);
 
-        assert_eq!(transform * p, Tuple::point(2.0, 7.0, 4.0));
+        assert_eq!(transform * p, Point::new(2.0, 7.0, 4.0));
         assert_eq!(
             p.shear(0.0, 0.0, 0.0, 1.0, 0.0, 0.0),
-            Tuple::point(2.0, 7.0, 4.0)
+            Point::new(2.0, 7.0, 4.0)
         );
     }
 
     #[test]
     fn test_shearing_moves_z_to_x() {
         let transform = Matrix::shearing(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-        let p = Tuple::point(2.0, 3.0, 4.0);
+        let p = Point::new(2.0, 3.0, 4.0);
 
-        assert_eq!(transform * p, Tuple::point(2.0, 3.0, 6.0));
+        assert_eq!(transform * p, Point::new(2.0, 3.0, 6.0));
         assert_eq!(
             p.shear(0.0, 0.0, 0.0, 0.0, 1.0, 0.0),
-            Tuple::point(2.0, 3.0, 6.0)
+            Point::new(2.0, 3.0, 6.0)
         );
     }
 
     #[test]
     fn test_shearing_moves_z_to_y() {
         let transform = Matrix::shearing(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
-        let p = Tuple::point(2.0, 3.0, 4.0);
+        let p = Point::new(2.0, 3.0, 4.0);
 
-        assert_eq!(transform * p, Tuple::point(2.0, 3.0, 7.0));
+        assert_eq!(transform * p, Point::new(2.0, 3.0, 7.0));
         assert_eq!(
             p.shear(0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
-            Tuple::point(2.0, 3.0, 7.0)
+            Point::new(2.0, 3.0, 7.0)
         );
     }
 
     #[test]
     fn test_transformations_applied_in_sequence() {
-        let p = Tuple::point(1.0, 0.0, 1.0);
+        let p = Point::new(1.0, 0.0, 1.0);
         let a = Matrix::rotation_x(PI / 2.0);
         let b = Matrix::scaling(5.0, 5.0, 5.0);
         let c = Matrix::translation(10.0, 5.0, 7.0);
 
         let p2 = &a * p;
-        assert_eq!(p2, Tuple::point(1.0, -1.0, 0.0));
+        assert_eq!(p2, Point::new(1.0, -1.0, 0.0));
 
         let p3 = &b * p2;
-        assert_eq!(p3, Tuple::point(5.0, -5.0, 0.0));
+        assert_eq!(p3, Point::new(5.0, -5.0, 0.0));
 
         let p4 = &c * p3;
-        assert_eq!(p4, Tuple::point(15.0, 0.0, 7.0));
+        assert_eq!(p4, Point::new(15.0, 0.0, 7.0));
 
         let p5 = c * b * a * p;
-        assert_eq!(p5, Tuple::point(15.0, 0.0, 7.0));
+        assert_eq!(p5, Point::new(15.0, 0.0, 7.0));
 
         assert_eq!(
             p.rotate_x(PI / 2.0)
                 .scale(5.0, 5.0, 5.0)
                 .translate(10.0, 5.0, 7.0),
-            Tuple::point(15.0, 0.0, 7.0)
+            Point::new(15.0, 0.0, 7.0)
         )
     }
 }

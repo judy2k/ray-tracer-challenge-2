@@ -1,6 +1,6 @@
 use ray_tracer_challenge_2::canvas::Canvas;
 use ray_tracer_challenge_2::color::Color;
-use ray_tracer_challenge_2::space::{Point, Tuple, Vector};
+use ray_tracer_challenge_2::space::{Point, Vector};
 use std::error::Error;
 use std::fs::OpenOptions;
 use std::io::BufWriter;
@@ -30,12 +30,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let projectile_color = Color::new(1.0, 0., 0.);
 
     let mut projectile = Projectile {
-        position: Tuple::point(0.0, 1.0, 0.0),
-        velocity: Tuple::vector(1.0, 1.8, 0.0).normalize() * 11.25,
+        position: Point::new(0.0, 1.0, 0.0),
+        velocity: Vector::new(1.0, 1.8, 0.0).normalize() * 11.25,
     };
     let environment = Env {
-        gravity: Tuple::vector(0.0, -0.1, 0.0),
-        wind: Tuple::vector(-0.01, 0.0, 0.0),
+        gravity: Vector::new(0.0, -0.1, 0.0),
+        wind: Vector::new(-0.01, 0.0, 0.0),
     };
 
     let mut canvas = Canvas::new(900, 550);
@@ -45,7 +45,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let canvas_y = canvas.height - projectile.position.y().round() as usize;
 
         canvas.plot_point(
-            &Tuple::point(canvas_x as f64, canvas_y as f64, 0.0),
+            &Point::new(canvas_x as f64, canvas_y as f64, 0.0),
             &projectile_color,
         );
 

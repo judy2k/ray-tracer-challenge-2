@@ -1,7 +1,7 @@
 use ray_tracer_challenge_2::canvas::Canvas;
 use ray_tracer_challenge_2::color::Color;
 use ray_tracer_challenge_2::matrix::Matrix;
-use ray_tracer_challenge_2::space::Tuple;
+use ray_tracer_challenge_2::space::Point;
 use std::error::Error;
 use std::f64::consts::PI;
 use std::fs::OpenOptions;
@@ -23,7 +23,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let point = Matrix::translation(centre_x, centre_y, 0.0)
             * Matrix::rotation_z(angle)
             * Matrix::translation(0.0, centre_y * 0.9, 0.0)
-            * Tuple::point(0.0, 0.0, 0.0);
+            * Point::new(0.0, 0.0, 0.0);
         canvas.plot_point(&point, &point_color);
     }
 

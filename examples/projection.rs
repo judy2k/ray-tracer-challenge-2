@@ -6,17 +6,17 @@ use ray_tracer_challenge_2::{
     matrix::Matrix,
     ray::{Intersections, Ray},
     shape::Sphere,
-    space::Tuple,
+    space::Point,
 };
 
 const OUTPUT_PATH: &str = "output/projection.ppm";
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let origin = Tuple::point(0.0, 0.0, -5.0);
+    let origin = Point::new(0.0, 0.0, -5.0);
     let wall_z = 10.0;
     let wall_size = 7.0;
 
-    let canvas_pixels = 180;
+    let canvas_pixels = 512;
     let pixel_size = wall_size / canvas_pixels as f64;
     let half = wall_size / 2.0;
 
@@ -32,7 +32,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         for x in 0..canvas_pixels {
             let world_x = -half + pixel_size * x as f64;
 
-            let position = Tuple::point(world_x, world_y, wall_z);
+            let position = Point::new(world_x, world_y, wall_z);
 
             let r = Ray::new(origin, (position - origin).normalize());
             // TODO: Optimize this - shouldn't transfer from vector to Intersections.

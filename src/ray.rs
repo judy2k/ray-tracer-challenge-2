@@ -47,7 +47,7 @@ impl<'a> Eq for Intersection<'a> {}
 impl<'a> Ord for Intersection<'a> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match self.t.partial_cmp(&other.t).unwrap() {
-            Ordering::Greater=> Ordering::Less,
+            Ordering::Greater => Ordering::Less,
             Ordering::Less => Ordering::Greater,
             Ordering::Equal => Ordering::Equal,
         }
@@ -95,30 +95,29 @@ impl<'a> Intersections<'a> {
 #[cfg(test)]
 mod test {
     use crate::shape::{Shape, Sphere};
-    use crate::space::Tuple;
 
     use super::*;
 
     #[test]
     fn test_ray_construction() {
-        let p = Tuple::point(1., 2., 3.);
-        let v = Tuple::vector(4., 5., 6.);
+        let p = Point::new(1., 2., 3.);
+        let v = Vector::new(4., 5., 6.);
 
         let r = Ray::new(p, v);
-        assert_eq!(r.origin, Tuple::point(1., 2., 3.));
-        assert_eq!(r.direction, Tuple::vector(4., 5., 6.));
+        assert_eq!(r.origin, Point::new(1., 2., 3.));
+        assert_eq!(r.direction, Vector::new(4., 5., 6.));
     }
 
     #[test]
     fn test_point_computation() {
-        let p = Tuple::point(2., 3., 4.);
-        let v = Tuple::vector(1., 0., 0.);
+        let p = Point::new(2., 3., 4.);
+        let v = Vector::new(1., 0., 0.);
         let r = Ray::new(p, v);
 
-        assert_eq!(r.position(0.), Tuple::point(2., 3., 4.));
-        assert_eq!(r.position(1.), Tuple::point(3., 3., 4.));
-        assert_eq!(r.position(-1.), Tuple::point(1., 3., 4.));
-        assert_eq!(r.position(2.5), Tuple::point(4.5, 3., 4.));
+        assert_eq!(r.position(0.), Point::new(2., 3., 4.));
+        assert_eq!(r.position(1.), Point::new(3., 3., 4.));
+        assert_eq!(r.position(-1.), Point::new(1., 3., 4.));
+        assert_eq!(r.position(2.5), Point::new(4.5, 3., 4.));
     }
 
     #[test]
@@ -183,19 +182,19 @@ mod test {
 
     #[test]
     fn test_ray_translation() {
-        let r = Ray::new(Tuple::point(1.0, 2.0, 3.0), Tuple::vector(0.0, 1.0, 0.0));
+        let r = Ray::new(Point::new(1.0, 2.0, 3.0), Vector::new(0.0, 1.0, 0.0));
         let m = Matrix::translation(3.0, 4.0, 5.0);
         let r2 = r.transform(&m);
-        assert_eq!(r2.origin, Tuple::point(4.0, 6.0, 8.0));
-        assert_eq!(r2.direction, Tuple::vector(0.0, 1.0, 0.0));
+        assert_eq!(r2.origin, Point::new(4.0, 6.0, 8.0));
+        assert_eq!(r2.direction, Vector::new(0.0, 1.0, 0.0));
     }
 
     #[test]
     fn test_ray_scaling() {
-        let r = Ray::new(Tuple::point(1.0, 2.0, 3.0), Tuple::vector(0.0, 1.0, 0.0));
+        let r = Ray::new(Point::new(1.0, 2.0, 3.0), Vector::new(0.0, 1.0, 0.0));
         let m = Matrix::scaling(2.0, 3.0, 4.0);
         let r2 = r.transform(&m);
-        assert_eq!(r2.origin, Tuple::point(2.0, 6.0, 12.0));
-        assert_eq!(r2.direction, Tuple::vector(0.0, 3.0, 0.0));
+        assert_eq!(r2.origin, Point::new(2.0, 6.0, 12.0));
+        assert_eq!(r2.direction, Vector::new(0.0, 3.0, 0.0));
     }
 }

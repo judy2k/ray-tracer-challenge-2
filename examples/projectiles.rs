@@ -1,4 +1,4 @@
-use ray_tracer_challenge_2::space::{Point, Tuple, Vector};
+use ray_tracer_challenge_2::space::{Point, Vector};
 use std::error::Error;
 
 #[derive(Debug)]
@@ -22,12 +22,12 @@ fn tick(env: &Env, projectile: Projectile) -> Projectile {
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut projectile = Projectile {
-        position: Tuple::point(0.0, 1.0, 0.0),
-        velocity: Tuple::vector(1.0, 1.0, 0.0).normalize(),
+        position: Point::new(0.0, 1.0, 0.0),
+        velocity: Vector::new(1.0, 1.0, 0.0).normalize(),
     };
     let environment = Env {
-        gravity: Tuple::vector(0.0, -0.1, 0.0),
-        wind: Tuple::vector(-0.01, 0.0, 0.0),
+        gravity: Vector::new(0.0, -0.1, 0.0),
+        wind: Vector::new(-0.01, 0.0, 0.0),
     };
 
     println!("{:?}", projectile.position);
