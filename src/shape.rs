@@ -26,6 +26,12 @@ impl Sphere {
         }
     }
 
+    pub fn with_transform(transformation: Matrix) -> Self {
+        Self {
+            transformation
+        }
+    }
+
     pub fn transformation(&mut self) -> &mut Matrix {
         &mut self.transformation
     }
@@ -52,7 +58,10 @@ impl Sphere {
     }
 
     pub fn normal_at(&self, p: Point) -> Vector {
-        (p - Tuple::point(0.0, 0.0, 0.0)).normalize()
+        let op = self.transformation.inverse().unwrap() * p;
+        let on = op - Tuple::point(0.0, 0.0, 0.0);
+        let wn = self.transformation.inverse().unwrap().transpose() * on;
+        wn.normalize()
     }
 }
 
@@ -64,6 +73,8 @@ impl Default for Sphere {
 
 #[cfg(test)]
 mod test {
+    use std::f64::consts::PI;
+
     use crate::{ray::Ray, space::Tuple};
 
     use super::*;
@@ -165,6 +176,13 @@ mod test {
     }
 
     #[test]
+    fn test_with_transformation() {
+        let t = Matrix::translation(2.0, 3.0, 4.0);
+        let s = Sphere::with_transform(t.clone());
+        assert_eq!(s.transformation, t);
+    }
+
+    #[test]
     fn test_intersect_scaled_sphere() {
         let r = Ray::new(Tuple::point(0.0, 0.0, -5.0), Tuple::vector(0.0, 0.0, 1.0));
         let mut s = Sphere::new();
@@ -229,5 +247,19 @@ mod test {
         let s = Sphere::new();
         let n = s.normal_at(Tuple::point(trt, trt, trt));
         assert_eq!(n, n.normalize());
+    }
+
+    #[test]
+    fn test_sphere_translated_normal() {
+        let s = Sphere::with_transform(Matrix::translation(0.0, 1.0, 0.0));
+        let n = s.normal_at(Tuple::point(0.0, 1.70711, -0.70711));
+        assert_eq!(n, Tuple::vector(0.0, 0.70711, -0.70711));
+    }
+
+    #[test]
+    fn test_sphere_transformed() {
+        let s = Sphere::with_transform(Matrix::scaling(1.0, 0.5, 1.0) * Matrix::rotation_z(PI / 5.0) );
+        let n = s.normal_at(Tuple::point(0.0, (2.0_f64).sqrt() / 2.0, -(2.0_f64).sqrt() / 2.0));
+        assert_eq!(n, Tuple::vector(0.0, 0.97014, -0.24254));
     }
 }

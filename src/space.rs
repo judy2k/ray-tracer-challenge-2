@@ -144,6 +144,8 @@ impl Vector {
 
 impl From<Tuple> for Vector {
     fn from(value: Tuple) -> Self {
+        let mut value = value;
+        value.w = 0.0;
         Self(value)
     }
 }
