@@ -1,5 +1,7 @@
 pub mod canvas;
 pub mod color;
+pub mod lighting;
+pub mod materials;
 pub mod matrix;
 pub mod ppm;
 pub mod ray;

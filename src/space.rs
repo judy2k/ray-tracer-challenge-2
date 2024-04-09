@@ -154,6 +154,10 @@ impl Vector {
             self.x * other.y - self.y * other.x,
         )
     }
+
+    pub fn reflect(&self, normal: &Vector) -> Vector {
+        *self - normal * 2.0 * self.dot(*normal)
+    }
 }
 
 impl From<Tuple> for Vector {
@@ -545,5 +549,22 @@ mod test {
 
         assert_eq!(a.cross(b), Vector::new(-1., 2., -1.));
         assert_eq!(b.cross(a), Vector::new(1., -2., 1.));
+    }
+
+    #[test]
+    fn test_reflect_45() {
+        let v = Vector::new(1.0, -1.0, 0.0);
+        let n = Vector::new(0.0, 1.0, 0.0);
+        let r = v.reflect(&n);
+        assert_eq!(r, Vector::new(1.0, 1.0, 0.0));
+    }
+
+    #[test]
+    fn test_reflect_slanted() {
+        let hsq = (2.0_f64).sqrt() / 2.0;
+        let v = Vector::new(0.0, -1.0, 0.0);
+        let n = Vector::new(hsq, hsq, 0.0);
+
+        assert_eq!(v.reflect(&n), Vector::new(1.0, 0.0, 0.0));
     }
 }

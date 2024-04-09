@@ -1,3 +1,4 @@
+use crate::materials::Material;
 use crate::matrix::{identity_matrix, Matrix};
 use crate::ray::Ray;
 use crate::ray::{Intersection, Intersections};
@@ -17,17 +18,19 @@ impl<'a> From<&'a Sphere> for Shape<'a> {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Sphere {
     transformation: Matrix,
+    material: Material,
 }
 
 impl Sphere {
     pub fn new() -> Self {
         Self {
             transformation: identity_matrix().to_owned(),
+            material: Material::new(),
         }
     }
 
     pub fn with_transform(transformation: Matrix) -> Self {
-        Self { transformation }
+        Self { transformation, material: Material::new() }
     }
 
     pub fn transformation(&mut self) -> &mut Matrix {
@@ -265,5 +268,21 @@ mod test {
             -(2.0_f64).sqrt() / 2.0,
         ));
         assert_eq!(n, Vector::new(0.0, 0.97014, -0.24254));
+    }
+
+    #[test]
+    fn test_sphere_default_material() {
+        let s = Sphere::new();
+        assert_eq!(s.material, Material::new())
+    }
+
+    #[test]
+    fn test_sphere_assign_material() {
+        let mut s = Sphere::new();
+        let mut m = Material::new();
+        m.ambient = 1.0;
+        s.material = m.clone();
+
+        assert_eq!(s.material, m)
     }
 }
