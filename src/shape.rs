@@ -1,7 +1,7 @@
 use crate::matrix::{identity_matrix, Matrix};
+use crate::ray::Ray;
 use crate::ray::{Intersection, Intersections};
 use crate::space::{Point, Vector};
-use crate::{ray::Ray};
 
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Shape<'a> {
