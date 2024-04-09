@@ -2,7 +2,7 @@ test:
     cargo nextest run --no-fail-fast
 
 run target="projectiles":
-    cargo run --example {{target}}
+    cargo run --release --example {{target}}
 
 examples:
     just run plot_projectile
