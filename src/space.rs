@@ -31,6 +31,12 @@ impl Point {
     }
 }
 
+impl From<Tuple> for Point {
+    fn from(value: Tuple) -> Self {
+        Self(value)
+    }
+}
+
 impl Add<Vector> for Point {
     type Output = Point;
     fn add(self, rhs: Vector) -> Self::Output {
@@ -133,6 +139,12 @@ impl Vector {
             self.z * other.x - self.x * other.z,
             self.x * other.y - self.y * other.x,
         )
+    }
+}
+
+impl From<Tuple> for Vector {
+    fn from(value: Tuple) -> Self {
+        Self(value)
     }
 }
 
@@ -337,18 +349,6 @@ impl Div<f64> for Tuple {
             z: self.z / rhs,
             w: self.w / rhs,
         }
-    }
-}
-
-impl Into<Point> for Tuple {
-    fn into(self) -> Point {
-        Point(self)
-    }
-}
-
-impl Into<Vector> for Tuple {
-    fn into(self) -> Vector {
-        Vector(self)
     }
 }
 

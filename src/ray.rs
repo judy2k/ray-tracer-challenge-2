@@ -32,11 +32,7 @@ pub struct Intersection<'a> {
 
 impl<'a> PartialOrd for Intersection<'a> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match self.t.partial_cmp(&other.t) {
-            Some(Ordering::Greater) => Some(Ordering::Less),
-            Some(Ordering::Less) => Some(Ordering::Greater),
-            default => default,
-        }
+        Some(self.cmp(other))
     }
 }
 
@@ -50,7 +46,11 @@ impl<'a> Eq for Intersection<'a> {}
 
 impl<'a> Ord for Intersection<'a> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.partial_cmp(other).unwrap()
+        match self.t.partial_cmp(&other.t).unwrap() {
+            Ordering::Greater=> Ordering::Less,
+            Ordering::Less => Ordering::Greater,
+            Ordering::Equal => Ordering::Equal,
+        }
     }
 }
 
@@ -80,16 +80,15 @@ impl<'a> Intersections<'a> {
     }
 
     pub fn hit(&self) -> Option<&Intersection<'a>> {
-        for i in self.items.iter() {
-            if i.t.is_sign_positive() {
-                return Some(i);
-            }
-        }
-        None
+        self.items.iter().find(|&i| i.t.is_sign_positive())
     }
 
     pub fn len(&self) -> usize {
         self.items.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.items.is_empty()
     }
 }
 

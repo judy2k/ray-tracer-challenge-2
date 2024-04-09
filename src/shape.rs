@@ -56,6 +56,12 @@ impl Sphere {
     }
 }
 
+impl Default for Sphere {
+    fn default() -> Self {
+        Sphere::new()
+    }
+}
+
 #[cfg(test)]
 mod test {
     use crate::{ray::Ray, space::Tuple};
