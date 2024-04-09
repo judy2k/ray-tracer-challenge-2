@@ -1,6 +1,5 @@
 use std::cmp::Ordering;
-use std::collections::{BTreeSet, BinaryHeap};
-use std::default;
+use std::collections::BinaryHeap;
 
 use crate::matrix::Matrix;
 use crate::shape::Shape;
@@ -36,7 +35,7 @@ impl<'a> PartialOrd for Intersection<'a> {
         match self.t.partial_cmp(&other.t) {
             Some(Ordering::Greater) => Some(Ordering::Less),
             Some(Ordering::Less) => Some(Ordering::Greater),
-            default=> default,
+            default => default,
         }
     }
 }
@@ -48,8 +47,6 @@ impl<'a> Intersection<'a> {
 }
 
 impl<'a> Eq for Intersection<'a> {}
-
-
 
 impl<'a> Ord for Intersection<'a> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {

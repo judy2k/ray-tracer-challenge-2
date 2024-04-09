@@ -52,8 +52,7 @@ impl Sphere {
     }
 
     pub fn normal_at(&self, p: Point) -> Vector {
-        //unimplemented!()
-        Tuple::vector(10.0, 0.0, 0.0)
+        (p - Tuple::point(0.0, 0.0, 0.0)).normalize()
     }
 }
 
