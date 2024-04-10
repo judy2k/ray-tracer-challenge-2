@@ -30,20 +30,27 @@ impl Sphere {
     }
 
     pub fn with_transform(transformation: Matrix) -> Self {
-        Self { transformation, material: Material::new() }
+        Self {
+            transformation,
+            material: Material::new(),
+        }
     }
 
     pub fn transformation(&mut self) -> &mut Matrix {
         &mut self.transformation
     }
 
+    pub fn material(&mut self) -> &mut Material {
+        &mut self.material
+    }
+
     pub fn intersect<'a>(&'a self, ray: Ray, intersections: &mut Intersections<'a>) {
         let ray2 = ray.transform(&self.transformation.inverse().unwrap());
 
         let sphere_to_ray = ray2.origin - Point::new(0., 0., 0.);
-        let a = ray2.direction.dot(ray2.direction);
-        let b = 2. * ray2.direction.dot(sphere_to_ray);
-        let c = sphere_to_ray.dot(sphere_to_ray) - 1.0;
+        let a = ray2.direction.dot(&ray2.direction);
+        let b = 2. * ray2.direction.dot(&sphere_to_ray);
+        let c = sphere_to_ray.dot(&sphere_to_ray) - 1.0;
         let discriminant = b * b - 4. * a * c;
 
         if discriminant >= 0.0 {

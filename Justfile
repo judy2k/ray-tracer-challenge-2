@@ -3,6 +3,7 @@ test:
 
 run target="projectiles":
     cargo run --release --example {{target}}
+    cd output && make
 
 examples:
     just run plot_projectile

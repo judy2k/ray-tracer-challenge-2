@@ -9,8 +9,17 @@ pub struct PointLight {
 impl PointLight {
     pub fn new(position: Point, intensity: Color) -> Self {
         Self {
-            position, intensity,
+            position,
+            intensity,
         }
+    }
+
+    pub fn intensity(&self) -> Color {
+        self.intensity
+    }
+
+    pub fn position(&self) -> Point {
+        self.position
     }
 }
 
@@ -26,6 +35,5 @@ mod test {
         let light = PointLight::new(position.clone(), intensity.clone());
         assert_eq!(light.position, position);
         assert_eq!(light.intensity, intensity);
-
     }
 }

@@ -5,6 +5,7 @@ use crate::matrix::Matrix;
 use crate::shape::Shape;
 use crate::space::{Point, Vector};
 
+#[derive(Debug, Clone, PartialEq)]
 pub struct Ray {
     pub origin: Point,
     pub direction: Vector,

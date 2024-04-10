@@ -1,4 +1,4 @@
-all: clock.png projectile.png projection.png
+all: clock.png projectile.png projection.png shading.png
 
 %.png: %.ppm
 	convert "$<" "$@"

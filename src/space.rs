@@ -10,6 +10,10 @@ impl Point {
         Self(Tuple::new(x, y, z, 1.0))
     }
 
+    pub fn origin() -> Self {
+        Self::new(0.0, 0.0, 0.0)
+    }
+
     pub fn subtract_origin(&self) -> Vector {
         let mut t = **self;
         t.w = 0.0;
@@ -143,7 +147,7 @@ impl Vector {
         Vector::new(self.x / m, self.y / m, self.z / m)
     }
 
-    pub fn dot(&self, other: Self) -> f64 {
+    pub fn dot(&self, other: &Self) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z + self.w + other.w
     }
 
@@ -156,7 +160,7 @@ impl Vector {
     }
 
     pub fn reflect(&self, normal: &Vector) -> Vector {
-        *self - normal * 2.0 * self.dot(*normal)
+        *self - normal * 2.0 * self.dot(normal)
     }
 }
 
@@ -539,7 +543,7 @@ mod test {
     fn test_tuple_dot() {
         let a = Vector::new(1.0, 2.0, 3.0);
         let b = Vector::new(2.0, 3.0, 4.0);
-        assert_approx_eq!(a.dot(b), 20.0);
+        assert_approx_eq!(a.dot(&b), 20.0);
     }
 
     #[test]
