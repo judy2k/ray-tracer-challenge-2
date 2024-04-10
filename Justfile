@@ -1,12 +1,16 @@
 test:
     cargo nextest run --no-fail-fast
 
-run target="projectiles":
+run target="shading":
     cargo run --release --example {{target}}
-    cd output && make
+    make -C output
 
 examples:
     just run plot_projectile
     just run clock
     just run projection
-    make -f output/Makefile
+    just run shading
+    make -C output
+
+clean:
+    make -C output clean

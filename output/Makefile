@@ -1,7 +1,9 @@
-all: clock.png projectile.png projection.png shading.png
+ARTIFACTS := clock.png projectile.png projection.png shading.png
+
+all: $(ARTIFACTS)
 
 %.png: %.ppm
 	convert "$<" "$@"
 
 clean:
-	rm clock.png projectile.png projection.png
+	rm $(ARTIFACTS)

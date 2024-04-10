@@ -37,7 +37,7 @@ impl Material {
         let lightv = (&light.position() - position).normalize();
         let ambient = effective_color * self.ambient;
         let light_dot_normal = lightv.dot(normalv);
-        
+
         let diffuse;
         let specular;
         if light_dot_normal < 0.0 {

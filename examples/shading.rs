@@ -1,7 +1,12 @@
 use std::{error::Error, fs::OpenOptions, io::BufWriter, time::Instant};
 
 use ray_tracer_challenge_2::{
-    canvas::Canvas, color::Color, lighting::PointLight, ray::{Intersections, Ray}, shape::Sphere, space::Point
+    canvas::Canvas,
+    color::Color,
+    lighting::PointLight,
+    ray::{Intersections, Ray},
+    shape::Sphere,
+    space::Point,
 };
 
 const OUTPUT_PATH: &str = "output/shading.ppm";
@@ -24,7 +29,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let light_color = Color::new(1.0, 1.0, 1.0);
     let light = PointLight::new(light_position, light_color);
 
-
     let before = Instant::now();
 
     for y in 0..canvas_pixels {
@@ -35,16 +39,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             let position = Point::new(world_x, world_y, wall_z);
 
             let r = Ray::new(origin, (position - origin).normalize());
-            // TODO: Optimize this - shouldn't transfer from vector to Intersections.
-            // Pass in &mut Intersections?
+
             let mut is = Intersections::new();
             shape.intersect(r.clone(), &mut is);
-            // let mut is = Intersections::new();
-            // for x in xs.iter() {
-            //     is.add(x);
-            // }
-            
-            if let Some(hit) =  is.hit() {
+
+            if let Some(hit) = is.hit() {
                 let point = r.position(hit.t);
                 let normal = shape.normal_at(point);
                 let eye = r.direction * -1.0;
