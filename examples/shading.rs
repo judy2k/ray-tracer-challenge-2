@@ -22,8 +22,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut canvas = Canvas::new(canvas_pixels as usize, canvas_pixels as usize);
     let mut shape = Sphere::new();
-    //*shape.transformation() = Matrix::scaling(0.5, 1.0, 1.0);
-    shape.material().color = Color::new(1.0, 0.2, 1.0);
+    shape.material().ambient = 0.5;
+    shape.material().shininess = 10.0;
+    shape.material().color = Color::new(1.0, 0.1, 0.0);
 
     let light_position = Point::new(-10., 10., -10.);
     let light_color = Color::new(1.0, 1.0, 1.0);
