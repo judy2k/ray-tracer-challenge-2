@@ -7,6 +7,7 @@ pub mod ppm;
 pub mod ray;
 pub mod shape;
 pub mod space;
+pub mod world;
 
 #[cfg(test)]
 mod testlib;
