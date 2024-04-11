@@ -5,7 +5,7 @@ use ray_tracer_challenge_2::{
     color::Color,
     lighting::PointLight,
     ray::{Intersections, Ray},
-    shape::Sphere,
+    shape::{Shape, Sphere},
     space::Point,
 };
 
@@ -25,6 +25,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     shape.material().ambient = 0.5;
     shape.material().shininess = 10.0;
     shape.material().color = Color::new(1.0, 0.1, 0.0);
+    let mut shape: Shape = shape.into();
 
     let light_position = Point::new(-10., 10., -10.);
     let light_color = Color::new(1.0, 1.0, 1.0);
@@ -42,11 +43,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             let r = Ray::new(origin, (position - origin).normalize());
 
             let mut is = Intersections::new();
-            shape.intersect(r.clone(), &mut is);
+            shape.intersect(&r, &mut is);
 
             if let Some(hit) = is.hit() {
                 let point = r.position(hit.t);
-                let normal = shape.normal_at(point);
+                let normal = shape.normal_at(&point);
                 let eye = r.direction * -1.0;
                 let color = shape.material().lighting(&light, &point, &eye, &normal);
 

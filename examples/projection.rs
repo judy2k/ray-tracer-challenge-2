@@ -4,7 +4,7 @@ use ray_tracer_challenge_2::{
     canvas::Canvas,
     color::Color,
     ray::{Intersections, Ray},
-    shape::Sphere,
+    shape::{Shape, Sphere},
     space::Point,
 };
 //use ray_tracer_challenge_2::matrix::Matrix;
@@ -22,7 +22,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut canvas = Canvas::new(canvas_pixels as usize, canvas_pixels as usize);
     let color = Color::new(1.0, 0.0, 0.0);
-    let shape = Sphere::new();
+    let shape: Shape = Sphere::new().into();
     //*shape.transformation() = Matrix::scaling(0.5, 1.0, 1.0);
 
     let before = Instant::now();
@@ -36,7 +36,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
             let r = Ray::new(origin, (position - origin).normalize());
             let mut is = Intersections::new();
-            shape.intersect(r, &mut is);
+            shape.intersect(&r, &mut is);
             if is.hit().is_some() {
                 canvas.write_pixel(x, y, color)
             }

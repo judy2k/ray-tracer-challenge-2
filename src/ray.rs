@@ -28,7 +28,7 @@ impl Ray {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Intersection<'a> {
     pub t: f64,
-    pub shape: Shape<'a>,
+    pub shape: &'a Shape,
 }
 
 impl<'a> PartialOrd for Intersection<'a> {
@@ -38,7 +38,7 @@ impl<'a> PartialOrd for Intersection<'a> {
 }
 
 impl<'a> Intersection<'a> {
-    pub fn new(t: f64, shape: Shape<'a>) -> Self {
+    pub fn new(t: f64, shape: &'a Shape) -> Self {
         Self { t, shape }
     }
 }
@@ -123,17 +123,17 @@ mod test {
 
     #[test]
     fn test_intersection() {
-        let s = Sphere::new();
-        let i = Intersection::new(3.5, (&s).into());
+        let s: Shape = Sphere::new().into();
+        let i = Intersection::new(3.5, &s);
         assert_eq!(i.t, 3.5);
-        assert_eq!(i.shape, Shape::Sphere(&s));
+        assert_eq!(i.shape, &s);
     }
 
     #[test]
     fn test_intersections_positive() {
-        let s = Sphere::new();
-        let i1 = Intersection::new(1.0, (&s).into());
-        let i2 = Intersection::new(2.0, (&s).into());
+        let s: Shape = Sphere::new().into();
+        let i1 = Intersection::new(1.0, &s);
+        let i2 = Intersection::new(2.0, &s);
 
         let mut xs = Intersections::new();
         xs.add(i2);
@@ -143,9 +143,9 @@ mod test {
 
     #[test]
     fn test_intersections_some_negative() {
-        let s = Sphere::new();
-        let i1 = Intersection::new(-1.0, (&s).into());
-        let i2 = Intersection::new(1.0, (&s).into());
+        let s: Shape = Sphere::new().into();
+        let i1 = Intersection::new(-1.0, &s);
+        let i2 = Intersection::new(1.0, &s);
 
         let mut xs = Intersections::new();
         xs.add(i2.clone());
@@ -155,9 +155,9 @@ mod test {
 
     #[test]
     fn test_intersections_all_negative() {
-        let s = Sphere::new();
-        let i1 = Intersection::new(-2.0, (&s).into());
-        let i2 = Intersection::new(-1.0, (&s).into());
+        let s: Shape = Sphere::new().into();
+        let i1 = Intersection::new(-2.0, &s);
+        let i2 = Intersection::new(-1.0, &s);
 
         let mut xs = Intersections::new();
         xs.add(i2);
@@ -167,11 +167,11 @@ mod test {
 
     #[test]
     fn test_intersections_more_values() {
-        let s = Sphere::new();
-        let i1 = Intersection::new(5.0, (&s).into());
-        let i2 = Intersection::new(7.0, (&s).into());
-        let i3 = Intersection::new(-3.0, (&s).into());
-        let i4 = Intersection::new(2.0, (&s).into());
+        let s: Shape = Sphere::new().into();
+        let i1 = Intersection::new(5.0, &s);
+        let i2 = Intersection::new(7.0, &s);
+        let i3 = Intersection::new(-3.0, &s);
+        let i4 = Intersection::new(2.0, &s);
 
         let mut xs = Intersections::new();
         xs.add(i1);
