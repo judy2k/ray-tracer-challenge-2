@@ -24,9 +24,15 @@ impl Shape {
         }
     }
 
-    pub fn material(&mut self) -> &mut Material {
+    pub fn material(&self) -> &Material {
         match self {
             Self::Sphere(sphere) => sphere.material(),
+        }
+    }
+
+    pub fn material_mut(&mut self) -> &mut Material {
+        match self {
+            Self::Sphere(sphere) => sphere.material_mut(),
         }
     }
 
@@ -85,7 +91,11 @@ impl Sphere {
         &mut self.transformation
     }
 
-    pub fn material(&mut self) -> &mut Material {
+    pub fn material(&self) -> &Material {
+        &self.material
+    }
+
+    pub fn material_mut(&mut self) -> &mut Material {
         &mut self.material
     }
 

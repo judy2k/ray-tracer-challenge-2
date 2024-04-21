@@ -40,9 +40,10 @@ mod test {
         let mut world = World::new();
         let light = PointLight::new(Point::new(-10.0, 10.0, -10.0), Color::new(1.0, 1.0, 1.0));
         let mut s1 = Sphere::new();
-        s1.material().color = Color::new(0.8, 1.0, 0.6);
-        s1.material().diffuse = 0.7;
-        s1.material().specular = 0.2;
+        let material = s1.material_mut();
+        material.color = Color::new(0.8, 1.0, 0.6);
+        material.diffuse = 0.7;
+        material.specular = 0.2;
         let mut s2 = Sphere::new();
         *s2.transformation() = Matrix::scaling(0.5, 0.5, 0.5);
         world.light = Some(light);
@@ -63,9 +64,10 @@ mod test {
         assert_eq!(Some(light), w.light);
 
         let mut s1 = Sphere::new();
-        s1.material().color = Color::new(0.8, 1.0, 0.6);
-        s1.material().diffuse = 0.7;
-        s1.material().specular = 0.2;
+        let material = s1.material_mut();
+        material.color = Color::new(0.8, 1.0, 0.6);
+        material.diffuse = 0.7;
+        material.specular = 0.2;
         
         let mut s2 = Sphere::new();
         *s2.transformation() = Matrix::scaling(0.5, 0.5, 0.5);

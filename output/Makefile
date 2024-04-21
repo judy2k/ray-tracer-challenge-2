@@ -1,4 +1,4 @@
-ARTIFACTS := clock.png projectile.png projection.png shading.png
+ARTIFACTS := clock.png projectile.png projection.png shading.png shading_parallel.png
 
 all: $(ARTIFACTS)
 

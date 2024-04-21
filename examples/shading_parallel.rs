@@ -1,5 +1,5 @@
 use std::{error::Error, fs::OpenOptions, io::BufWriter, time::Instant};
-
+use rayon::prelude::*;
 use ray_tracer_challenge_2::{
     canvas::Canvas,
     color::Color,
@@ -9,7 +9,22 @@ use ray_tracer_challenge_2::{
     space::Point,
 };
 
-const OUTPUT_PATH: &str = "output/shading.ppm";
+const OUTPUT_PATH: &str = "output/shading_parallel.ppm";
+
+fn generate_pixel(ray: &Ray, shape: &Shape, light: &PointLight) -> Option<Color> {
+    let mut is = Intersections::new();
+    shape.intersect(&ray, &mut is);
+
+    if let Some(hit) = is.hit() {
+        let point = ray.position(hit.t);
+        let normal = shape.normal_at(&point);
+        let eye = ray.direction * -1.0;
+        let color = shape.material().lighting(&light, &point, &eye, &normal);
+
+        return Some(color);
+    }
+    None
+}
 
 fn main() -> Result<(), Box<dyn Error>> {
     let origin = Point::new(0.0, 0.0, -5.0);
@@ -34,28 +49,22 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let before = Instant::now();
 
-    for y in 0..canvas_pixels {
+    (0..canvas_pixels).flat_map(|y| -> Vec<_> {
         let world_y = half - pixel_size * y as f64;
-        for x in 0..canvas_pixels {
+        let sh = shape.clone();
+        let l = light.clone();
+        (0..canvas_pixels as usize).into_par_iter().filter_map(move |x| {
             let world_x = -half + pixel_size * x as f64;
-
             let position = Point::new(world_x, world_y, wall_z);
-
-            let r = Ray::new(origin, (position - origin).normalize());
-
-            let mut is = Intersections::new();
-            shape.intersect(&r, &mut is);
-
-            if let Some(hit) = is.hit() {
-                let point = r.position(hit.t);
-                let normal = shape.normal_at(&point);
-                let eye = r.direction * -1.0;
-                let color = shape.material().lighting(&light, &point, &eye, &normal);
-
-                canvas.write_pixel(x, y, color)
+            let ray = Ray::new(origin, (position - origin).normalize());
+            if let Some(color) = generate_pixel(&ray, &sh, &l) {
+                Some((x, y, color))
+            } else {
+                None
             }
-        }
-    }
+        }).collect()
+    }).for_each(|(x, y, color)| canvas.write_pixel(x, y, color));
+
     println!("Generated pixels in {:.2?}", before.elapsed());
     let mut file = BufWriter::new(
         OpenOptions::new()

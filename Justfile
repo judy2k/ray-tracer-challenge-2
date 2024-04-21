@@ -10,7 +10,7 @@ examples:
     just run clock
     just run projection
     just run shading
-    make -C output
+    just run shading_parallel
 
 clean:
     make -C output clean
